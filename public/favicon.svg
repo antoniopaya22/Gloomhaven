@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#241c16"/>
+      <stop offset="100%" stop-color="#1a1410"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3d98b"/>
+      <stop offset="50%" stop-color="#d4a438"/>
+      <stop offset="100%" stop-color="#9a6a21"/>
+    </linearGradient>
+    <linearGradient id="goldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#b8862a"/>
+      <stop offset="100%" stop-color="#5c3d1a"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="62" fill="url(#bgGrad)"/>
+  <circle cx="64" cy="64" r="58" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+
+  <!-- Inner decorative ring -->
+  <circle cx="64" cy="64" r="50" fill="none" stroke="url(#goldDark)" stroke-width="1" opacity="0.5"/>
+
+  <!-- Shield shape -->
+  <path d="M64 20 L100 35 L100 65 C100 85 82 100 64 108 C46 100 28 85 28 65 L28 35 Z"
+        fill="url(#bgGrad)"
+        stroke="url(#goldGrad)"
+        stroke-width="3"/>
+
+  <!-- Inner shield detail -->
+  <path d="M64 28 L92 40 L92 63 C92 80 77 92 64 98 C51 92 36 80 36 63 L36 40 Z"
+        fill="none"
+        stroke="url(#goldDark)"
+        stroke-width="1.5"
+        opacity="0.6"/>
+
+  <!-- Crossed swords -->
+  <!-- Left sword -->
+  <g filter="url(#glow)">
+    <path d="M42 85 L56 45" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M52 48 L60 52 L56 45 L52 48" fill="url(#goldGrad)"/>
+    <path d="M40 82 L44 88 L42 85" fill="url(#goldGrad)"/>
+    <rect x="39" y="78" width="8" height="3" rx="1" fill="url(#goldGrad)" transform="rotate(-65 43 79.5)"/>
+  </g>
+
+  <!-- Right sword -->
+  <g filter="url(#glow)">
+    <path d="M86 85 L72 45" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round"/>
+    <path d="M76 48 L68 52 L72 45 L76 48" fill="url(#goldGrad)"/>
+    <path d="M88 82 L84 88 L86 85" fill="url(#goldGrad)"/>
+    <rect x="81" y="78" width="8" height="3" rx="1" fill="url(#goldGrad)" transform="rotate(65 85 79.5)"/>
+  </g>
+
+  <!-- Center diamond gem -->
+  <g filter="url(#glow)">
+    <path d="M64 50 L74 65 L64 80 L54 65 Z" fill="url(#goldGrad)"/>
+    <path d="M64 54 L71 65 L64 76 L57 65 Z" fill="url(#bgGrad)" opacity="0.4"/>
+    <path d="M64 58 L68 65 L64 72 L60 65 Z" fill="url(#goldGrad)" opacity="0.8"/>
+  </g>
+
+  <!-- Center gem highlight -->
+  <circle cx="64" cy="65" r="3" fill="#f9ecc4" opacity="0.9"/>
+
+  <!-- Corner ornaments -->
+  <circle cx="64" cy="32" r="2" fill="url(#goldGrad)"/>
+  <circle cx="40" cy="45" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>
+  <circle cx="88" cy="45" r="1.5" fill="url(#goldGrad)" opacity="0.7"/>
+</svg>

@@ -1,0 +1,928 @@
+---
+import Layout from '../layouts/Layout.astro';
+import EnemyManager from '../components/EnemyManager.astro';
+---
+
+<Layout title="Gloomhaven - Gestor de Enemigos">
+  <div class="app-layout">
+    <!-- Decorative Top Border -->
+    <div class="decorative-border top-border">
+      <div class="border-ornament left"></div>
+      <div class="border-line"></div>
+      <div class="border-ornament right"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="header-inner container">
+        <!-- Logo & Brand -->
+        <div class="brand">
+          <div class="brand-emblem">
+            <div class="emblem-inner">
+              <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" class="emblem-icon">
+                <path d="M20 4L4 12L20 20L36 12L20 4Z" fill="url(#gold-gradient)" opacity="0.9"/>
+                <path d="M4 28L20 36L36 28" stroke="url(#gold-gradient)" stroke-width="2" stroke-linecap="round"/>
+                <path d="M4 20L20 28L36 20" stroke="url(#gold-gradient)" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="20" cy="20" r="4" fill="url(#gold-gradient)"/>
+                <defs>
+                  <linearGradient id="gold-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#f3d98b"/>
+                    <stop offset="50%" stop-color="#d4a438"/>
+                    <stop offset="100%" stop-color="#9a6a21"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
+            <div class="emblem-glow"></div>
+          </div>
+          <div class="brand-text">
+            <h1 class="brand-title">Gloomhaven</h1>
+            <div class="brand-divider">
+              <span class="divider-line"></span>
+              <span class="divider-gem">◆</span>
+              <span class="divider-line"></span>
+            </div>
+            <p class="brand-tagline">Gestor de Enemigos</p>
+          </div>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="main-nav">
+          <ul class="nav-list">
+            <li class="nav-item active">
+              <a href="#enemigos" class="nav-link">
+                <span class="nav-icon">⚔️</span>
+                <span class="nav-text">Enemigos</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#escenario" class="nav-link">
+                <span class="nav-icon">🗺️</span>
+                <span class="nav-text">Escenario</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="#historial" class="nav-link">
+                <span class="nav-icon">📜</span>
+                <span class="nav-text">Historial</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        <!-- Header Actions -->
+        <div class="header-actions">
+          <button class="action-btn" id="helpBtn" aria-label="Ayuda">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+              <path d="M9 9a3 3 0 115 2.83c-.5.29-1 .88-1 1.67v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              <circle cx="12" cy="17" r="1" fill="currentColor"/>
+            </svg>
+          </button>
+          <button class="action-btn" id="settingsBtn" aria-label="Configuración">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
+              <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
+            </svg>
+          </button>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menú">
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Mobile Navigation Drawer -->
+    <div class="mobile-nav-overlay" id="mobileNavOverlay">
+      <nav class="mobile-nav">
+        <div class="mobile-nav-header">
+          <span class="mobile-nav-title">Navegación</span>
+          <button class="mobile-nav-close" id="mobileNavClose">✕</button>
+        </div>
+        <ul class="mobile-nav-list">
+          <li><a href="#enemigos" class="mobile-nav-link active">⚔️ Enemigos</a></li>
+          <li><a href="#escenario" class="mobile-nav-link">🗺️ Escenario</a></li>
+          <li><a href="#historial" class="mobile-nav-link">📜 Historial</a></li>
+        </ul>
+        <div class="mobile-nav-footer">
+          <button class="mobile-nav-btn">❓ Ayuda</button>
+          <button class="mobile-nav-btn">⚙️ Configuración</button>
+        </div>
+      </nav>
+    </div>
+
+    <!-- Scenario Info Bar -->
+    <div class="scenario-bar">
+      <div class="scenario-bar-inner container">
+        <div class="scenario-info">
+          <span class="scenario-label">Escenario Actual</span>
+          <span class="scenario-name">Sin escenario seleccionado</span>
+        </div>
+        <div class="scenario-stats">
+          <div class="stat">
+            <span class="stat-icon">⏱️</span>
+            <span class="stat-value">Ronda <strong>1</strong></span>
+          </div>
+          <div class="stat-divider"></div>
+          <div class="stat">
+            <span class="stat-icon">💀</span>
+            <span class="stat-value">Derrotados <strong>0</strong></span>
+          </div>
+        </div>
+        <button class="scenario-btn">
+          <span>Cambiar Escenario</span>
+          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="main" id="enemigos">
+      <div class="main-content container">
+        <EnemyManager />
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-inner container">
+        <div class="footer-brand">
+          <span class="footer-logo">◆</span>
+          <span class="footer-text">Gloomhaven Companion</span>
+        </div>
+        <p class="footer-tagline">
+          Creado con pasión para mejorar tu experiencia de juego
+        </p>
+        <div class="footer-links">
+          <a href="#" class="footer-link">Sobre el proyecto</a>
+          <span class="footer-separator">•</span>
+          <a href="#" class="footer-link">Guía de uso</a>
+          <span class="footer-separator">•</span>
+          <a href="#" class="footer-link">Reportar bug</a>
+        </div>
+        <p class="footer-copyright">© 2026 • Versión 1.0.0</p>
+      </div>
+    </footer>
+
+    <!-- Decorative Bottom Border -->
+    <div class="decorative-border bottom-border">
+      <div class="border-ornament left"></div>
+      <div class="border-line"></div>
+      <div class="border-ornament right"></div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Mobile Navigation
+  const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+  const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+  const mobileNavClose = document.getElementById('mobileNavClose');
+
+  function openMobileNav() {
+    mobileNavOverlay?.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMobileNav() {
+    mobileNavOverlay?.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  mobileMenuBtn?.addEventListener('click', openMobileNav);
+  mobileNavClose?.addEventListener('click', closeMobileNav);
+  mobileNavOverlay?.addEventListener('click', (e) => {
+    if (e.target === mobileNavOverlay) closeMobileNav();
+  });
+
+  // Close on escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMobileNav();
+  });
+
+  // Close mobile nav on link click
+  document.querySelectorAll('.mobile-nav-link').forEach(link => {
+    link.addEventListener('click', closeMobileNav);
+  });
+
+  // Active nav state
+  document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+      document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
+
+      (link as HTMLElement).closest('.nav-item')?.classList.add('active');
+      if (link.classList.contains('mobile-nav-link')) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+<style>
+  /* ==========================================
+     APP LAYOUT
+     ========================================== */
+  .app-layout {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  /* ==========================================
+     DECORATIVE BORDERS
+     ========================================== */
+  .decorative-border {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-4);
+    background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(184, 134, 42, 0.1) 20%,
+      rgba(184, 134, 42, 0.15) 50%,
+      rgba(184, 134, 42, 0.1) 80%,
+      transparent 100%
+    );
+  }
+
+  .border-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--gh-gold-600) 20%,
+      var(--gh-gold-400) 50%,
+      var(--gh-gold-600) 80%,
+      transparent 100%
+    );
+  }
+
+  .border-ornament {
+    width: 8px;
+    height: 8px;
+    background: var(--gh-gold-500);
+    transform: rotate(45deg);
+    box-shadow: 0 0 10px rgba(184, 134, 42, 0.5);
+  }
+
+  .bottom-border {
+    margin-top: auto;
+  }
+
+  /* ==========================================
+     HEADER
+     ========================================== */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: var(--z-sticky);
+    background: linear-gradient(180deg,
+      rgba(26, 20, 16, 0.98) 0%,
+      rgba(26, 20, 16, 0.95) 100%
+    );
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--gh-border-default);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-3);
+  }
+
+  /* Brand */
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .brand-emblem {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    flex-shrink: 0;
+  }
+
+  .emblem-inner {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(145deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
+    border: 2px solid var(--gh-gold-600);
+    border-radius: var(--radius-lg);
+    box-shadow:
+      inset 0 2px 4px rgba(255, 255, 255, 0.1),
+      inset 0 -2px 4px rgba(0, 0, 0, 0.3),
+      0 4px 12px rgba(0, 0, 0, 0.5);
+  }
+
+  .emblem-icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  .emblem-glow {
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle, rgba(184, 134, 42, 0.3) 0%, transparent 70%);
+    border-radius: var(--radius-xl);
+    z-index: 1;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.05); }
+  }
+
+  .brand-text {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+
+  .brand-title {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    font-weight: 700;
+    background: linear-gradient(135deg,
+      var(--gh-gold-200) 0%,
+      var(--gh-gold-400) 30%,
+      var(--gh-gold-300) 50%,
+      var(--gh-gold-500) 70%,
+      var(--gh-gold-300) 100%
+    );
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    text-shadow: 0 2px 10px rgba(184, 134, 42, 0.3);
+    letter-spacing: 0.08em;
+    margin: 0;
+    line-height: 1;
+  }
+
+  .brand-divider {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: 100%;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gh-gold-600), transparent);
+  }
+
+  .divider-gem {
+    color: var(--gh-gold-500);
+    font-size: 6px;
+  }
+
+  .brand-tagline {
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    color: var(--gh-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    margin: 0;
+  }
+
+  /* Navigation */
+  .main-nav {
+    display: none;
+  }
+
+  @media (min-width: 900px) {
+    .main-nav {
+      display: block;
+    }
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .nav-item {
+    position: relative;
+  }
+
+  .nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    color: var(--gh-text-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    transition: all var(--transition-base);
+    text-decoration: none;
+  }
+
+  .nav-link:hover {
+    color: var(--gh-text-primary);
+    background: rgba(184, 134, 42, 0.1);
+    border-color: var(--gh-border-subtle);
+  }
+
+  .nav-item.active .nav-link {
+    color: var(--gh-gold-400);
+    background: linear-gradient(135deg, rgba(184, 134, 42, 0.15) 0%, rgba(184, 134, 42, 0.05) 100%);
+    border-color: var(--gh-gold-600);
+    box-shadow: 0 0 15px rgba(184, 134, 42, 0.2);
+  }
+
+  .nav-icon {
+    font-size: var(--text-base);
+  }
+
+  /* Header Actions */
+  .header-actions {
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  @media (min-width: 900px) {
+    .header-actions {
+      display: flex;
+    }
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: var(--gh-bg-medium);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    color: var(--gh-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .action-btn:hover {
+    background: var(--gh-bg-light);
+    border-color: var(--gh-gold-600);
+    color: var(--gh-gold-400);
+    box-shadow: 0 0 15px rgba(184, 134, 42, 0.2);
+  }
+
+  .action-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Mobile Menu Button */
+  .mobile-menu-btn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 44px;
+    height: 44px;
+    background: var(--gh-bg-medium);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  @media (min-width: 900px) {
+    .mobile-menu-btn {
+      display: none;
+    }
+  }
+
+  .mobile-menu-btn:hover {
+    background: var(--gh-bg-light);
+    border-color: var(--gh-gold-600);
+  }
+
+  .hamburger-line {
+    width: 20px;
+    height: 2px;
+    background: var(--gh-gold-500);
+    border-radius: 1px;
+    transition: all var(--transition-base);
+  }
+
+  /* Mobile Navigation */
+  .mobile-nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .mobile-nav-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-nav {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: min(320px, 85vw);
+    height: 100%;
+    background: linear-gradient(180deg, var(--gh-bg-dark) 0%, var(--gh-bg-darker) 100%);
+    border-left: 1px solid var(--gh-border-default);
+    transform: translateX(100%);
+    transition: transform var(--transition-slow);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .mobile-nav-overlay.active .mobile-nav {
+    transform: translateX(0);
+  }
+
+  .mobile-nav-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gh-border-default);
+  }
+
+  .mobile-nav-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--gh-gold-400);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .mobile-nav-close {
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gh-bg-medium);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    color: var(--gh-text-secondary);
+    font-size: var(--text-lg);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .mobile-nav-close:hover {
+    background: var(--gh-red-700);
+    border-color: var(--gh-red-600);
+    color: white;
+  }
+
+  .mobile-nav-list {
+    list-style: none;
+    padding: var(--space-4);
+    margin: 0;
+    flex: 1;
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    color: var(--gh-text-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    margin-bottom: var(--space-2);
+    transition: all var(--transition-base);
+  }
+
+  .mobile-nav-link:hover,
+  .mobile-nav-link.active {
+    color: var(--gh-gold-400);
+    background: rgba(184, 134, 42, 0.1);
+    border-color: var(--gh-border-default);
+  }
+
+  .mobile-nav-footer {
+    padding: var(--space-4);
+    border-top: 1px solid var(--gh-border-default);
+    display: flex;
+    gap: var(--space-2);
+  }
+
+  .mobile-nav-btn {
+    flex: 1;
+    padding: var(--space-3);
+    background: var(--gh-bg-medium);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    color: var(--gh-text-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .mobile-nav-btn:hover {
+    background: var(--gh-bg-light);
+    color: var(--gh-text-primary);
+  }
+
+  /* ==========================================
+     SCENARIO BAR
+     ========================================== */
+  .scenario-bar {
+    background: linear-gradient(180deg, var(--gh-bg-dark) 0%, var(--gh-bg-medium) 100%);
+    border-bottom: 1px solid var(--gh-border-subtle);
+  }
+
+  .scenario-bar-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+  }
+
+  .scenario-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .scenario-label {
+    font-size: var(--text-xs);
+    color: var(--gh-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+
+  .scenario-name {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    color: var(--gh-text-secondary);
+  }
+
+  .scenario-stats {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .stat {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .stat-icon {
+    font-size: var(--text-base);
+  }
+
+  .stat-value {
+    font-size: var(--text-sm);
+    color: var(--gh-text-secondary);
+  }
+
+  .stat-value strong {
+    color: var(--gh-gold-400);
+    font-weight: 600;
+  }
+
+  .stat-divider {
+    width: 1px;
+    height: 20px;
+    background: var(--gh-border-default);
+  }
+
+  .scenario-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+    background: var(--gh-bg-light);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    color: var(--gh-text-secondary);
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .scenario-btn:hover {
+    background: var(--gh-gold-700);
+    border-color: var(--gh-gold-600);
+    color: var(--gh-gold-100);
+  }
+
+  .scenario-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  @media (max-width: 640px) {
+    .scenario-stats {
+      display: none;
+    }
+  }
+
+  /* ==========================================
+     MAIN CONTENT
+     ========================================== */
+  .main {
+    flex: 1;
+    padding-block: var(--space-6);
+  }
+
+  @media (min-width: 768px) {
+    .main {
+      padding-block: var(--space-8);
+    }
+  }
+
+  .main-content {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* ==========================================
+     FOOTER
+     ========================================== */
+  .footer {
+    background: linear-gradient(180deg, var(--gh-bg-dark) 0%, var(--gh-bg-darker) 100%);
+    border-top: 1px solid var(--gh-border-subtle);
+    padding-block: var(--space-8);
+  }
+
+  .footer-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .footer-brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .footer-logo {
+    color: var(--gh-gold-500);
+    font-size: var(--text-xl);
+  }
+
+  .footer-text {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--gh-gold-400);
+    letter-spacing: 0.05em;
+  }
+
+  .footer-tagline {
+    font-size: var(--text-sm);
+    color: var(--gh-text-muted);
+    max-width: 400px;
+    margin: 0;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+  }
+
+  .footer-link {
+    font-size: var(--text-sm);
+    color: var(--gh-text-secondary);
+    transition: color var(--transition-fast);
+  }
+
+  .footer-link:hover {
+    color: var(--gh-gold-400);
+  }
+
+  .footer-separator {
+    color: var(--gh-text-muted);
+  }
+
+  .footer-copyright {
+    font-size: var(--text-xs);
+    color: var(--gh-text-muted);
+    margin: 0;
+    opacity: 0.7;
+  }
+
+  /* ==========================================
+     RESPONSIVE ADJUSTMENTS
+     ========================================== */
+  @media (max-width: 640px) {
+    .brand-emblem {
+      width: 48px;
+      height: 48px;
+    }
+
+    .emblem-icon {
+      width: 26px;
+      height: 26px;
+    }
+
+    .brand-title {
+      font-size: var(--text-xl);
+    }
+
+    .brand-divider,
+    .brand-tagline {
+      display: none;
+    }
+
+    .decorative-border {
+      padding: var(--space-1) var(--space-2);
+    }
+
+    .border-ornament {
+      width: 6px;
+      height: 6px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .brand-title {
+      font-size: var(--text-lg);
+    }
+
+    .brand-emblem {
+      width: 40px;
+      height: 40px;
+    }
+
+    .emblem-icon {
+      width: 22px;
+      height: 22px;
+    }
+  }
+
+  /* Landscape small devices */
+  @media (max-height: 500px) and (orientation: landscape) {
+    .header-inner {
+      padding-block: var(--space-2);
+    }
+
+    .brand-emblem {
+      width: 40px;
+      height: 40px;
+    }
+
+    .decorative-border {
+      display: none;
+    }
+
+    .main {
+      padding-block: var(--space-4);
+    }
+
+    .footer {
+      padding-block: var(--space-4);
+    }
+  }
+</style>
