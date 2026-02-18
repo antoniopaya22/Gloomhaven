@@ -1,26 +1,108 @@
 ---
+import type { Lang } from '../i18n/translations';
+import { defaultLang } from '../i18n/translations';
+
 interface Props {
   title: string;
+  lang?: Lang;
+  description?: string;
+  ogTitle?: string;
+  siteName?: string;
+  keywords?: string;
+  canonicalUrl?: string;
+  alternateEs?: string;
+  alternateEn?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  lang = 'es',
+  description = 'Gestor de enemigos online para Gloomhaven. Controla vida, estados y tipos de enemigos en tus partidas del juego de mesa.',
+  ogTitle = title,
+  siteName = 'Gloomhaven Enemy Manager',
+  keywords = '',
+  canonicalUrl,
+  alternateEs,
+  alternateEn,
+} = Astro.props;
+
+const siteBase = 'https://antoniopaya22.github.io/Gloomhaven';
+const canonical = canonicalUrl || (lang === defaultLang ? siteBase + '/' : `${siteBase}/${lang}/`);
+const altEs = alternateEs || siteBase + '/';
+const altEn = alternateEn || siteBase + '/en/';
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebApplication',
+  name: siteName,
+  description: description,
+  url: canonical,
+  applicationCategory: 'GameApplication',
+  operatingSystem: 'Any',
+  offers: {
+    '@type': 'Offer',
+    price: '0',
+    priceCurrency: 'EUR',
+  },
+  inLanguage: [lang === 'es' ? 'es' : 'en'],
+  author: {
+    '@type': 'Person',
+    name: 'Antonio Payá González',
+    url: 'https://antoniopaya22.github.io',
+  },
+};
 ---
 
 <!doctype html>
-<html lang="es">
+<html lang={lang}>
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Gloomhaven - Gestión de Enemigos para tu partida" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
+    <title>{title}</title>
+
+    <!-- SEO Meta -->
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <meta name="author" content="Antonio Payá González" />
+    <meta name="generator" content={Astro.generator} />
     <meta name="theme-color" content="#1a1410" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Canonical & Alternate Languages -->
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es" href={altEs} />
+    <link rel="alternate" hreflang="en" href={altEn} />
+    <link rel="alternate" hreflang="x-default" href={altEs} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:locale" content={lang === 'es' ? 'es_ES' : 'en_US'} />
+    <meta property="og:locale:alternate" content={lang === 'es' ? 'en_US' : 'es_ES'} />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={description} />
+
+    <!-- Mobile Web App -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={`${import.meta.env.BASE_URL}/favicon.svg`} />
+
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;500;600;700&family=Crimson+Text:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+
+    <!-- Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
   </head>
   <body>
     <div class="app-wrapper">

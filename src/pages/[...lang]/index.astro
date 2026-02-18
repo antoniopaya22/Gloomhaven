@@ -1,9 +1,39 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import EnemyManager from '../components/EnemyManager.astro';
+import Layout from '../../layouts/Layout.astro';
+import EnemyManager from '../../components/EnemyManager.astro';
+import LanguageSwitcher from '../../components/LanguageSwitcher.astro';
+import { useTranslations } from '../../i18n/utils';
+import type { Lang } from '../../i18n/translations';
+
+export function getStaticPaths() {
+  return [
+    { params: { lang: undefined } },
+    { params: { lang: 'en' } },
+  ];
+}
+
+const lang = (Astro.params.lang || 'es') as Lang;
+const t = useTranslations(lang);
+
+const jsTranslations = {
+  'type.normal': t['type.normal'],
+  'type.elite': t['type.elite'],
+  'type.boss': t['type.boss'],
+  'type.objective': t['type.objective'],
+  'em.expand': t['em.expand'],
+  'em.collapse': t['em.collapse'],
+  'js.confirmClear': t['js.confirmClear'],
+};
 ---
 
-<Layout title="Gloomhaven - Gestor de Enemigos">
+<Layout
+  title={t['page.title']}
+  lang={lang}
+  description={t['meta.description']}
+  ogTitle={t['meta.og.title']}
+  siteName={t['meta.og.siteName']}
+  keywords={t['meta.keywords']}
+>
   <div class="app-layout">
     <!-- Decorative Top Border -->
     <div class="decorative-border top-border">
@@ -42,21 +72,21 @@ import EnemyManager from '../components/EnemyManager.astro';
               <span class="divider-gem">◆</span>
               <span class="divider-line"></span>
             </div>
-            <p class="brand-tagline">Gestor de Enemigos</p>
+            <p class="brand-tagline">{t['header.tagline']}</p>
           </div>
         </div>
 
-        <!-- Navigation -->
         <!-- Header Actions -->
         <div class="header-actions">
-          <button class="action-btn" id="helpBtn" aria-label="Ayuda">
+          <LanguageSwitcher lang={lang} />
+          <button class="action-btn" id="helpBtn" aria-label={t['header.help']}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
               <path d="M9 9a3 3 0 115 2.83c-.5.29-1 .88-1 1.67v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
               <circle cx="12" cy="17" r="1" fill="currentColor"/>
             </svg>
           </button>
-          <button class="action-btn" id="settingsBtn" aria-label="Configuración">
+          <button class="action-btn" id="settingsBtn" aria-label={t['header.settings']}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/>
               <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/>
@@ -65,7 +95,7 @@ import EnemyManager from '../components/EnemyManager.astro';
         </div>
 
         <!-- Mobile Menu Button -->
-        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label="Menú">
+        <button class="mobile-menu-btn" id="mobileMenuBtn" aria-label={t['header.menu']}>
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
           <span class="hamburger-line"></span>
@@ -77,14 +107,14 @@ import EnemyManager from '../components/EnemyManager.astro';
     <div class="mobile-nav-overlay" id="mobileNavOverlay">
       <nav class="mobile-nav">
         <div class="mobile-nav-header">
-          <span class="mobile-nav-title">Navegación</span>
+          <span class="mobile-nav-title">{t['nav.title']}</span>
           <button class="mobile-nav-close" id="mobileNavClose">✕</button>
         </div>
         <ul class="mobile-nav-list">
         </ul>
         <div class="mobile-nav-footer">
-          <button class="mobile-nav-btn">❓ Ayuda</button>
-          <button class="mobile-nav-btn">⚙️ Configuración</button>
+          <button class="mobile-nav-btn" data-action="help">❓ {t['nav.help']}</button>
+          <button class="mobile-nav-btn" data-action="settings">⚙️ {t['nav.settings']}</button>
         </div>
       </nav>
     </div>
@@ -97,54 +127,54 @@ import EnemyManager from '../components/EnemyManager.astro';
             <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 9a3 3 0 115 2.83c-.5.29-1 .88-1 1.67v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
           </div>
           <div class="info-modal-title-group">
-            <h3 class="info-modal-title">Guía de Uso</h3>
-            <p class="info-modal-subtitle">Aprende a usar el gestor de enemigos</p>
+            <h3 class="info-modal-title">{t['help.title']}</h3>
+            <p class="info-modal-subtitle">{t['help.subtitle']}</p>
           </div>
-          <button class="info-modal-close" data-close-modal="helpModal" aria-label="Cerrar">
+          <button class="info-modal-close" data-close-modal="helpModal" aria-label={t['help.close']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
         <div class="info-modal-body">
           <div class="help-section">
-            <h4 class="help-heading">⚔️ Añadir Enemigos</h4>
-            <p>Pulsa <strong>"Añadir Enemigo"</strong> para invocar nuevos enemigos al campo de batalla. Puedes elegir nombre, vida máxima, cantidad y tipo.</p>
+            <h4 class="help-heading">⚔️ {t['help.addEnemies.title']}</h4>
+            <p set:html={t['help.addEnemies.text']} />
           </div>
           <div class="help-section">
-            <h4 class="help-heading">🎭 Tipos de Enemigo</h4>
+            <h4 class="help-heading">🎭 {t['help.types.title']}</h4>
             <ul class="help-list">
-              <li><span class="help-tag normal">👤 Normal</span> Enemigo estándar</li>
-              <li><span class="help-tag elite">⭐ Élite</span> Más fuerte que un normal</li>
-              <li><span class="help-tag boss">👑 Jefe</span> Enemigo principal del escenario</li>
-              <li><span class="help-tag objective">🎯 Objetivo</span> Objetivo de misión — solo tiene vida, sin estados</li>
+              <li><span class="help-tag normal">👤 {t['type.normal']}</span> {t['help.types.normal']}</li>
+              <li><span class="help-tag elite">⭐ {t['type.elite']}</span> {t['help.types.elite']}</li>
+              <li><span class="help-tag boss">👑 {t['type.boss']}</span> {t['help.types.boss']}</li>
+              <li><span class="help-tag objective">🎯 {t['type.objective']}</span> {t['help.types.objective']}</li>
             </ul>
           </div>
           <div class="help-section">
-            <h4 class="help-heading">❤️ Gestión de Vida</h4>
-            <p>Usa los botones <strong class="text-red">rojos (-)</strong> para aplicar daño y los <strong class="text-green">verdes (+)</strong> para curar. Si la vida llega a 0, el enemigo muere automáticamente.</p>
+            <h4 class="help-heading">❤️ {t['help.health.title']}</h4>
+            <p set:html={t['help.health.text']} />
           </div>
           <div class="help-section">
-            <h4 class="help-heading">📋 Estados</h4>
+            <h4 class="help-heading">📋 {t['help.statuses.title']}</h4>
             <ul class="help-list">
-              <li><span class="help-emoji">☠️</span> <strong>Veneno:</strong> +1 daño recibido por ataque</li>
-              <li><span class="help-emoji">🩸</span> <strong>Herida:</strong> 1 daño al inicio del turno</li>
-              <li><span class="help-emoji">⛓️</span> <strong>Inmóvil:</strong> No puede moverse</li>
-              <li><span class="help-emoji">🚫</span> <strong>Desarme:</strong> No puede atacar</li>
-              <li><span class="help-emoji">💫</span> <strong>Aturdido:</strong> Pierde su turno</li>
-              <li><span class="help-emoji">🌀</span> <strong>Confuso:</strong> Desventaja en ataques</li>
-              <li><span class="help-emoji">💪</span> <strong>Fuerte:</strong> Ventaja en ataques</li>
-              <li><span class="help-emoji">🛡️</span> <strong>Escudo:</strong> Reduce daño recibido</li>
+              <li><span class="help-emoji">☠️</span> <Fragment set:html={t['help.statuses.poison']} /></li>
+              <li><span class="help-emoji">🩸</span> <Fragment set:html={t['help.statuses.wound']} /></li>
+              <li><span class="help-emoji">⛓️</span> <Fragment set:html={t['help.statuses.immobilize']} /></li>
+              <li><span class="help-emoji">🚫</span> <Fragment set:html={t['help.statuses.disarm']} /></li>
+              <li><span class="help-emoji">💫</span> <Fragment set:html={t['help.statuses.stun']} /></li>
+              <li><span class="help-emoji">🌀</span> <Fragment set:html={t['help.statuses.muddle']} /></li>
+              <li><span class="help-emoji">💪</span> <Fragment set:html={t['help.statuses.strengthen']} /></li>
+              <li><span class="help-emoji">🛡️</span> <Fragment set:html={t['help.statuses.shield']} /></li>
             </ul>
           </div>
           <div class="help-section">
-            <h4 class="help-heading">🔢 Numeración</h4>
-            <p>Los números se asignan automáticamente. Si eliminas un enemigo, su número queda libre y será reutilizado por el siguiente que crees con el mismo nombre.</p>
+            <h4 class="help-heading">🔢 {t['help.numbering.title']}</h4>
+            <p>{t['help.numbering.text']}</p>
           </div>
           <div class="help-section">
-            <h4 class="help-heading">🎮 Controles de Tarjeta</h4>
+            <h4 class="help-heading">🎮 {t['help.controls.title']}</h4>
             <ul class="help-list">
-              <li><strong>Colapsar:</strong> Minimiza la tarjeta para ahorrar espacio</li>
-              <li><strong>Duplicar:</strong> Crea una copia con el siguiente número libre</li>
-              <li><strong>Eliminar:</strong> Quita al enemigo del campo</li>
+              <li><Fragment set:html={t['help.controls.collapse']} /></li>
+              <li><Fragment set:html={t['help.controls.duplicate']} /></li>
+              <li><Fragment set:html={t['help.controls.delete']} /></li>
             </ul>
           </div>
         </div>
@@ -159,18 +189,18 @@ import EnemyManager from '../components/EnemyManager.astro';
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/></svg>
           </div>
           <div class="info-modal-title-group">
-            <h3 class="info-modal-title">Configuración</h3>
-            <p class="info-modal-subtitle">Personaliza tu experiencia</p>
+            <h3 class="info-modal-title">{t['settings.title']}</h3>
+            <p class="info-modal-subtitle">{t['settings.subtitle']}</p>
           </div>
-          <button class="info-modal-close" data-close-modal="settingsModal" aria-label="Cerrar">
+          <button class="info-modal-close" data-close-modal="settingsModal" aria-label={t['settings.close']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
         <div class="info-modal-body">
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">🎬 Animaciones</span>
-              <span class="setting-desc">Activar animaciones de muerte y eliminación</span>
+              <span class="setting-label">🎬 {t['settings.animations.label']}</span>
+              <span class="setting-desc">{t['settings.animations.desc']}</span>
             </div>
             <label class="toggle">
               <input type="checkbox" id="settingAnimations" checked />
@@ -179,8 +209,8 @@ import EnemyManager from '../components/EnemyManager.astro';
           </div>
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">⚠️ Confirmar al limpiar</span>
-              <span class="setting-desc">Pedir confirmación antes de eliminar todos los enemigos</span>
+              <span class="setting-label">⚠️ {t['settings.confirmClear.label']}</span>
+              <span class="setting-desc">{t['settings.confirmClear.desc']}</span>
             </div>
             <label class="toggle">
               <input type="checkbox" id="settingConfirmClear" checked />
@@ -189,8 +219,8 @@ import EnemyManager from '../components/EnemyManager.astro';
           </div>
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">💀 Auto-eliminar al morir</span>
-              <span class="setting-desc">Eliminar automáticamente enemigos al llegar a 0 de vida</span>
+              <span class="setting-label">💀 {t['settings.autoRemove.label']}</span>
+              <span class="setting-desc">{t['settings.autoRemove.desc']}</span>
             </div>
             <label class="toggle">
               <input type="checkbox" id="settingAutoRemoveDead" checked />
@@ -199,8 +229,8 @@ import EnemyManager from '../components/EnemyManager.astro';
           </div>
           <div class="setting-item">
             <div class="setting-info">
-              <span class="setting-label">📏 Tarjetas compactas</span>
-              <span class="setting-desc">Iniciar con las tarjetas de enemigo colapsadas</span>
+              <span class="setting-label">📏 {t['settings.compact.label']}</span>
+              <span class="setting-desc">{t['settings.compact.desc']}</span>
             </div>
             <label class="toggle">
               <input type="checkbox" id="settingCompactCards" />
@@ -214,7 +244,7 @@ import EnemyManager from '../components/EnemyManager.astro';
     <!-- Main Content -->
     <main class="main" id="enemigos">
       <div class="main-content container">
-        <EnemyManager />
+        <EnemyManager t={t} />
       </div>
     </main>
 
@@ -232,6 +262,9 @@ import EnemyManager from '../components/EnemyManager.astro';
       <div class="border-ornament right"></div>
     </div>
   </div>
+
+  <!-- i18n data for client-side scripts -->
+  <script type="application/json" id="i18n-data" set:html={JSON.stringify(jsTranslations)} />
 </Layout>
 
 <script>
@@ -286,9 +319,9 @@ import EnemyManager from '../components/EnemyManager.astro';
   document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       closeMobileNav();
-      const text = btn.textContent?.trim() || '';
-      if (text.includes('Ayuda')) openInfoModal('helpModal');
-      if (text.includes('Configuración')) openInfoModal('settingsModal');
+      const action = (btn as HTMLElement).dataset.action;
+      if (action === 'help') openInfoModal('helpModal');
+      if (action === 'settings') openInfoModal('settingsModal');
     });
   });
 

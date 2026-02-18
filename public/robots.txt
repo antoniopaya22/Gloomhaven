@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://antoniopaya22.github.io/Gloomhaven/sitemap-index.xml

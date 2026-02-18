@@ -1,0 +1,56 @@
+---
+import type { Lang } from '../i18n/translations';
+import { getAlternateUrl } from '../i18n/utils';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const otherLang: Lang = lang === 'es' ? 'en' : 'es';
+const otherUrl = getAlternateUrl(Astro.url, otherLang);
+---
+
+<a href={otherUrl} class="lang-switch" aria-label={otherLang === 'en' ? 'Switch to English' : 'Cambiar a Español'}>
+  <span class:list={['lang-option', { active: lang === 'es' }]}>ES</span>
+  <span class="lang-divider">|</span>
+  <span class:list={['lang-option', { active: lang === 'en' }]}>EN</span>
+</a>
+
+<style>
+  .lang-switch {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: var(--space-1) var(--space-2);
+    background: var(--gh-bg-medium);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: all var(--transition-base);
+  }
+
+  .lang-switch:hover {
+    border-color: var(--gh-gold-600);
+    background: var(--gh-bg-light);
+  }
+
+  .lang-option {
+    font-family: var(--font-heading);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    color: var(--gh-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color var(--transition-fast);
+  }
+
+  .lang-option.active {
+    color: var(--gh-gold-400);
+  }
+
+  .lang-divider {
+    font-size: var(--text-xs);
+    color: var(--gh-border-default);
+  }
+</style>

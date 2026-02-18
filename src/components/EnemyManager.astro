@@ -1,6 +1,13 @@
 ---
 // EnemyManager Component - Gloomhaven Enemy Tracker
 // Professional dark fantasy design
+import type { Translations } from '../i18n/translations';
+
+interface Props {
+  t: Translations;
+}
+
+const { t } = Astro.props;
 ---
 
 <section class="enemy-manager">
@@ -16,8 +23,8 @@
         </svg>
       </div>
       <div class="section-title-group">
-        <h2 class="section-title">Campo de Batalla</h2>
-        <p class="section-subtitle">Gestiona los enemigos activos</p>
+        <h2 class="section-title">{t['em.title']}</h2>
+        <p class="section-subtitle">{t['em.subtitle']}</p>
       </div>
     </div>
 
@@ -25,33 +32,33 @@
       <div class="quick-stats" id="quickStats">
         <div class="quick-stat">
           <span class="quick-stat-value" id="enemyCount">0</span>
-          <span class="quick-stat-label">Enemigos</span>
+          <span class="quick-stat-label">{t['em.enemies']}</span>
         </div>
         <div class="quick-stat-divider"></div>
         <div class="quick-stat">
           <span class="quick-stat-value" id="totalHp">0</span>
-          <span class="quick-stat-label">Vida Total</span>
+          <span class="quick-stat-label">{t['em.totalHp']}</span>
         </div>
       </div>
 
       <div class="header-actions">
-        <button class="btn btn-danger" id="clearAllBtn" title="Eliminar todos" disabled>
+        <button class="btn btn-danger" id="clearAllBtn" title={t['card.clearAll']} disabled>
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="btn-label">Limpiar</span>
+          <span class="btn-label">{t['em.clear']}</span>
         </button>
-        <button class="btn btn-ghost" id="collapseAllBtn" title="Colapsar todos" disabled>
+        <button class="btn btn-ghost" id="collapseAllBtn" title={t['em.collapse']} disabled>
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
           </svg>
-          <span class="btn-label">Colapsar</span>
+          <span class="btn-label">{t['em.collapse']}</span>
         </button>
         <button class="btn btn-primary" id="addEnemyBtn">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
           </svg>
-          <span class="btn-label">Añadir Enemigo</span>
+          <span class="btn-label">{t['em.addEnemy']}</span>
         </button>
       </div>
     </div>
@@ -73,13 +80,13 @@
         </div>
         <div class="empty-glow"></div>
       </div>
-      <h3 class="empty-title">Sin enemigos en el campo</h3>
-      <p class="empty-text">Añade enemigos para comenzar a gestionar el combate de tu partida de Gloomhaven</p>
+      <h3 class="empty-title">{t['em.empty.title']}</h3>
+      <p class="empty-text">{t['em.empty.text']}</p>
       <button class="btn btn-primary btn-lg" id="emptyAddBtn">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
         </svg>
-        <span>Invocar Enemigo</span>
+        <span>{t['em.empty.button']}</span>
       </button>
     </div>
 
@@ -98,10 +105,10 @@
         </svg>
       </div>
       <div class="modal-title-group">
-        <h3 class="modal-title">Invocar Enemigo</h3>
-        <p class="modal-subtitle">Añade un nuevo enemigo al campo de batalla</p>
+        <h3 class="modal-title">{t['em.modal.title']}</h3>
+        <p class="modal-subtitle">{t['em.modal.subtitle']}</p>
       </div>
-      <button class="modal-close" id="closeModalBtn" aria-label="Cerrar">
+      <button class="modal-close" id="closeModalBtn" aria-label={t['em.modal.close']}>
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
@@ -112,13 +119,13 @@
       <div class="form-group">
         <label class="form-label" for="enemyName">
           <span class="label-icon">📛</span>
-          Nombre del Enemigo
+          {t['em.modal.name']}
         </label>
         <input
           type="text"
           id="enemyName"
           class="form-input"
-          placeholder="Ej: Guardia Bandido, Esqueleto Arquero..."
+          placeholder={t['em.modal.namePlaceholder']}
           autocomplete="off"
           required
         />
@@ -127,7 +134,7 @@
       <div class="form-group">
         <label class="form-label" for="enemyHealth">
           <span class="label-icon">❤️</span>
-          Vida Máxima
+          {t['em.modal.health']}
         </label>
         <input type="number" id="enemyHealth" class="form-input" value="10" min="1" max="999" />
       </div>
@@ -135,55 +142,55 @@
       <div class="form-group">
         <label class="form-label">
           <span class="label-icon">👥</span>
-          Cantidad a Crear
+          {t['em.modal.quantity']}
         </label>
         <div class="quantity-control">
-          <button type="button" class="qty-btn" data-action="decrease" aria-label="Disminuir">
+          <button type="button" class="qty-btn" data-action="decrease" aria-label={t['em.modal.quantityDecrease']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
           </button>
           <div class="qty-display">
             <input type="number" id="enemyQuantity" class="qty-input" value="1" min="1" max="20" />
-            <span class="qty-label">enemigos</span>
+            <span class="qty-label">{t['em.modal.quantityLabel']}</span>
           </div>
-          <button type="button" class="qty-btn" data-action="increase" aria-label="Aumentar">
+          <button type="button" class="qty-btn" data-action="increase" aria-label={t['em.modal.quantityIncrease']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
           </button>
         </div>
-        <span class="form-hint">Los números se asignan automáticamente reutilizando huecos libres</span>
+        <span class="form-hint">{t['em.modal.quantityHint']}</span>
       </div>
 
       <div class="form-group">
         <label class="form-label">
           <span class="label-icon">🎭</span>
-          Tipo de Enemigo
+          {t['em.modal.type']}
         </label>
         <div class="enemy-type-selector">
           <label class="type-option">
             <input type="radio" name="enemyType" value="normal" checked />
             <span class="type-card">
               <span class="type-icon">👤</span>
-              <span class="type-name">Normal</span>
+              <span class="type-name">{t['type.normal']}</span>
             </span>
           </label>
           <label class="type-option">
             <input type="radio" name="enemyType" value="elite" />
             <span class="type-card elite">
               <span class="type-icon">⭐</span>
-              <span class="type-name">Élite</span>
+              <span class="type-name">{t['type.elite']}</span>
             </span>
           </label>
           <label class="type-option">
             <input type="radio" name="enemyType" value="boss" />
             <span class="type-card boss">
               <span class="type-icon">👑</span>
-              <span class="type-name">Jefe</span>
+              <span class="type-name">{t['type.boss']}</span>
             </span>
           </label>
           <label class="type-option">
             <input type="radio" name="enemyType" value="objective" />
             <span class="type-card objective">
               <span class="type-icon">🎯</span>
-              <span class="type-name">Objetivo</span>
+              <span class="type-name">{t['type.objective']}</span>
             </span>
           </label>
         </div>
@@ -191,12 +198,12 @@
     </form>
 
     <div class="modal-footer">
-      <button type="button" class="btn btn-ghost" id="cancelModalBtn">Cancelar</button>
+      <button type="button" class="btn btn-ghost" id="cancelModalBtn">{t['em.modal.cancel']}</button>
       <button type="submit" class="btn btn-primary" id="confirmAddBtn">
         <svg viewBox="0 0 24 24" fill="none">
           <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
         </svg>
-        <span>Invocar</span>
+        <span>{t['em.modal.confirm']}</span>
       </button>
     </div>
   </div>
@@ -209,23 +216,33 @@
     <div class="card-frame">
       <!-- Card Header -->
       <header class="card-header">
+        <div class="drag-handle" title={t['card.drag']}>
+          <svg viewBox="0 0 24 24" fill="none">
+            <circle cx="9" cy="5" r="1.5" fill="currentColor"/>
+            <circle cx="15" cy="5" r="1.5" fill="currentColor"/>
+            <circle cx="9" cy="12" r="1.5" fill="currentColor"/>
+            <circle cx="15" cy="12" r="1.5" fill="currentColor"/>
+            <circle cx="9" cy="19" r="1.5" fill="currentColor"/>
+            <circle cx="15" cy="19" r="1.5" fill="currentColor"/>
+          </svg>
+        </div>
         <div class="enemy-badge">
-          <input type="number" class="badge-input" value="1" min="1" max="99" aria-label="Número"/>
+          <input type="number" class="badge-input" value="1" min="1" max="99" aria-label={t['card.number']}/>
         </div>
         <div class="enemy-identity">
-          <input type="text" class="enemy-name" placeholder="Nombre del enemigo" aria-label="Nombre"/>
+          <input type="text" class="enemy-name" placeholder={t['card.namePlaceholder']} aria-label={t['card.name']}/>
           <div class="enemy-type-badge">
-            <span class="type-text">Normal</span>
+            <span class="type-text">{t['type.normal']}</span>
           </div>
         </div>
         <div class="card-controls">
-          <button class="ctrl-btn ctrl-collapse" data-action="collapse" aria-label="Colapsar">
+          <button class="ctrl-btn ctrl-collapse" data-action="collapse" aria-label={t['card.collapse']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
-          <button class="ctrl-btn ctrl-duplicate" data-action="duplicate" aria-label="Duplicar">
+          <button class="ctrl-btn ctrl-duplicate" data-action="duplicate" aria-label={t['card.duplicate']}>
             <svg viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="13" height="13" rx="2" stroke="currentColor" stroke-width="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" stroke="currentColor" stroke-width="2"/></svg>
           </button>
-          <button class="ctrl-btn ctrl-delete" data-action="delete" aria-label="Eliminar">
+          <button class="ctrl-btn ctrl-delete" data-action="delete" aria-label={t['card.delete']}>
             <svg viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4a2 2 0 012-2h4a2 2 0 012 2v2m3 0v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6h14zM10 11v6M14 11v6" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
           </button>
         </div>
@@ -243,23 +260,23 @@
       <div class="card-body">
         <!-- Health Controls -->
         <div class="health-section">
-          <div class="health-label">Puntos de Vida</div>
+          <div class="health-label">{t['card.hp']}</div>
           <div class="health-controls">
             <div class="health-display">
               <span class="health-current">10</span>
               <span class="health-divider">/</span>
-              <input type="number" class="health-max" value="10" min="1" max="999" aria-label="Vida máxima"/>
+              <input type="number" class="health-max" value="10" min="1" max="999" aria-label={t['card.hpMax']}/>
             </div>
             <div class="health-buttons-row">
               <div class="damage-controls">
-                <button class="health-btn damage-btn" data-amount="-10" aria-label="-10 vida">-10</button>
-                <button class="health-btn damage-btn" data-amount="-5" aria-label="-5 vida">-5</button>
-                <button class="health-btn damage-btn" data-amount="-1" aria-label="-1 vida">-1</button>
+                <button class="health-btn damage-btn" data-amount="-5" aria-label={`-5 ${t['js.hpAria']}`}>-5</button>
+                <button class="health-btn damage-btn" data-amount="-2" aria-label={`-2 ${t['js.hpAria']}`}>-2</button>
+                <button class="health-btn damage-btn" data-amount="-1" aria-label={`-1 ${t['js.hpAria']}`}>-1</button>
               </div>
               <div class="heal-controls">
-                <button class="health-btn heal-btn" data-amount="1" aria-label="+1 vida">+1</button>
-                <button class="health-btn heal-btn" data-amount="5" aria-label="+5 vida">+5</button>
-                <button class="health-btn heal-btn" data-amount="10" aria-label="+10 vida">+10</button>
+                <button class="health-btn heal-btn" data-amount="1" aria-label={`+1 ${t['js.hpAria']}`}>+1</button>
+                <button class="health-btn heal-btn" data-amount="2" aria-label={`+2 ${t['js.hpAria']}`}>+2</button>
+                <button class="health-btn heal-btn" data-amount="5" aria-label={`+5 ${t['js.hpAria']}`}>+5</button>
               </div>
             </div>
           </div>
@@ -277,32 +294,32 @@
           <div class="status-group">
             <div class="status-header negative">
               <span class="status-header-icon">⚠️</span>
-              <span class="status-header-text">Estados Negativos</span>
+              <span class="status-header-text">{t['status.negative']}</span>
             </div>
             <div class="status-grid">
-              <button class="status-btn" data-status="poison" title="Veneno: +1 daño recibido por ataque">
+              <button class="status-btn" data-status="poison" title={t['status.poison.desc']}>
                 <span class="status-emoji">☠️</span>
-                <span class="status-name">Veneno</span>
+                <span class="status-name">{t['status.poison']}</span>
               </button>
-              <button class="status-btn" data-status="wound" title="Herida: 1 daño al inicio del turno">
+              <button class="status-btn" data-status="wound" title={t['status.wound.desc']}>
                 <span class="status-emoji">🩸</span>
-                <span class="status-name">Herida</span>
+                <span class="status-name">{t['status.wound']}</span>
               </button>
-              <button class="status-btn" data-status="immobilize" title="Inmovilizado: No puede moverse">
+              <button class="status-btn" data-status="immobilize" title={t['status.immobilize.desc']}>
                 <span class="status-emoji">⛓️</span>
-                <span class="status-name">Inmóvil</span>
+                <span class="status-name">{t['status.immobilize']}</span>
               </button>
-              <button class="status-btn" data-status="disarm" title="Desarmado: No puede atacar">
+              <button class="status-btn" data-status="disarm" title={t['status.disarm.desc']}>
                 <span class="status-emoji">🚫</span>
-                <span class="status-name">Desarme</span>
+                <span class="status-name">{t['status.disarm']}</span>
               </button>
-              <button class="status-btn" data-status="stun" title="Aturdido: Pierde su turno">
+              <button class="status-btn" data-status="stun" title={t['status.stun.desc']}>
                 <span class="status-emoji">💫</span>
-                <span class="status-name">Aturdido</span>
+                <span class="status-name">{t['status.stun']}</span>
               </button>
-              <button class="status-btn" data-status="muddle" title="Confundido: Desventaja en ataques">
+              <button class="status-btn" data-status="muddle" title={t['status.muddle.desc']}>
                 <span class="status-emoji">🌀</span>
-                <span class="status-name">Confuso</span>
+                <span class="status-name">{t['status.muddle']}</span>
               </button>
             </div>
           </div>
@@ -310,16 +327,16 @@
           <div class="status-group">
             <div class="status-header positive">
               <span class="status-header-icon">✨</span>
-              <span class="status-header-text">Estados Positivos</span>
+              <span class="status-header-text">{t['status.positive']}</span>
             </div>
             <div class="status-grid positive-grid">
-              <button class="status-btn positive" data-status="strengthen" title="Fortalecido: Ventaja en ataques">
+              <button class="status-btn positive" data-status="strengthen" title={t['status.strengthen.desc']}>
                 <span class="status-emoji">💪</span>
-                <span class="status-name">Fuerte</span>
+                <span class="status-name">{t['status.strengthen']}</span>
               </button>
-              <button class="status-btn positive" data-status="shield" title="Escudo: Reduce daño recibido">
+              <button class="status-btn positive" data-status="shield" title={t['status.shield.desc']}>
                 <span class="status-emoji">🛡️</span>
-                <span class="status-name">Escudo</span>
+                <span class="status-name">{t['status.shield']}</span>
               </button>
             </div>
           </div>
@@ -330,6 +347,12 @@
 </template>
 
 <script>
+  // ========================================
+  // I18N
+  // ========================================
+  const i18nEl = document.getElementById('i18n-data');
+  const i18n = i18nEl ? JSON.parse(i18nEl.textContent || '{}') : {};
+
   // ========================================
   // STATE
   // ========================================
@@ -346,6 +369,8 @@
 
   const enemies = new Map<string, EnemyState>();
   let idCounter = 0;
+  let manualOrder = false;
+  let draggedCard: HTMLElement | null = null;
 
   // ========================================
   // DOM REFERENCES
@@ -445,7 +470,12 @@
 
     // Set type badge
     const typeBadge = card.querySelector('.enemy-type-badge .type-text') as HTMLElement;
-    const typeLabels: Record<string, string> = { elite: 'Élite', boss: 'Jefe', objective: 'Objetivo', normal: 'Normal' };
+    const typeLabels: Record<string, string> = {
+      elite: i18n['type.elite'] || 'Elite',
+      boss: i18n['type.boss'] || 'Boss',
+      objective: i18n['type.objective'] || 'Objective',
+      normal: i18n['type.normal'] || 'Normal'
+    };
     typeBadge.textContent = typeLabels[type] || 'Normal';
 
     // Hide status section for objective type
@@ -525,6 +555,9 @@
         if (action === 'delete') deleteEnemy(card, id, false);
       });
     });
+
+    // Drag events
+    setupDragEvents(card);
   }
 
   function getSettings() {
@@ -605,6 +638,7 @@
   }
 
   function sortEnemiesInGrid() {
+    if (manualOrder) return;
     const cards = Array.from(grid.querySelectorAll('.enemy-card')) as HTMLElement[];
     cards.sort((a, b) => {
       const stateA = enemies.get(a.dataset.enemyId || '');
@@ -663,6 +697,162 @@
   }
 
   // ========================================
+  // DRAG AND DROP
+  // ========================================
+  function setupDragEvents(card: HTMLElement) {
+    const handle = card.querySelector('.drag-handle') as HTMLElement;
+    if (!handle) return;
+
+    // -- Desktop: HTML5 Drag and Drop --
+    handle.addEventListener('mousedown', () => {
+      card.setAttribute('draggable', 'true');
+    });
+
+    card.addEventListener('dragstart', (e) => {
+      draggedCard = card;
+      card.classList.add('dragging');
+      e.dataTransfer!.effectAllowed = 'move';
+      e.dataTransfer!.setData('text/plain', '');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      card.removeAttribute('draggable');
+      draggedCard = null;
+      grid.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+    });
+
+    card.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      if (!draggedCard || draggedCard === card) return;
+      e.dataTransfer!.dropEffect = 'move';
+      const rect = card.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      card.classList.remove('drag-over-top', 'drag-over-bottom');
+      if (e.clientY < midY) {
+        card.classList.add('drag-over-top');
+      } else {
+        card.classList.add('drag-over-bottom');
+      }
+    });
+
+    card.addEventListener('dragleave', () => {
+      card.classList.remove('drag-over-top', 'drag-over-bottom');
+    });
+
+    card.addEventListener('drop', (e) => {
+      e.preventDefault();
+      card.classList.remove('drag-over-top', 'drag-over-bottom');
+      if (!draggedCard || draggedCard === card) return;
+      const rect = card.getBoundingClientRect();
+      const midY = rect.top + rect.height / 2;
+      if (e.clientY < midY) {
+        card.before(draggedCard);
+      } else {
+        card.after(draggedCard);
+      }
+      manualOrder = true;
+    });
+
+    // -- Mobile: Touch drag --
+    let touchActive = false;
+    let touchClone: HTMLElement | null = null;
+    let touchOffsetX = 0;
+    let touchOffsetY = 0;
+
+    handle.addEventListener('touchstart', (e) => {
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchActive = true;
+      draggedCard = card;
+      card.classList.add('dragging');
+
+      const rect = card.getBoundingClientRect();
+      touchOffsetX = touch.clientX - rect.left;
+      touchOffsetY = touch.clientY - rect.top;
+
+      touchClone = card.cloneNode(true) as HTMLElement;
+      touchClone.classList.add('drag-clone');
+      touchClone.style.position = 'fixed';
+      touchClone.style.zIndex = '10000';
+      touchClone.style.width = rect.width + 'px';
+      touchClone.style.pointerEvents = 'none';
+      touchClone.style.opacity = '0.85';
+      touchClone.style.transform = 'rotate(1.5deg) scale(1.03)';
+      touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+      touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+      document.body.appendChild(touchClone);
+    }, { passive: false });
+
+    handle.addEventListener('touchmove', (e) => {
+      if (!touchActive || !touchClone) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      touchClone.style.left = (touch.clientX - touchOffsetX) + 'px';
+      touchClone.style.top = (touch.clientY - touchOffsetY) + 'px';
+
+      // Clear previous indicators
+      grid.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+
+      // Find target card under touch point
+      const allCards = Array.from(grid.querySelectorAll('.enemy-card')) as HTMLElement[];
+      for (const target of allCards) {
+        if (target === card) continue;
+        const targetRect = target.getBoundingClientRect();
+        if (touch.clientX >= targetRect.left && touch.clientX <= targetRect.right &&
+            touch.clientY >= targetRect.top && touch.clientY <= targetRect.bottom) {
+          const midY = targetRect.top + targetRect.height / 2;
+          if (touch.clientY < midY) {
+            target.classList.add('drag-over-top');
+          } else {
+            target.classList.add('drag-over-bottom');
+          }
+          break;
+        }
+      }
+    }, { passive: false });
+
+    const endTouchDrag = () => {
+      if (!touchActive) return;
+
+      const overTop = grid.querySelector('.drag-over-top') as HTMLElement | null;
+      const overBottom = grid.querySelector('.drag-over-bottom') as HTMLElement | null;
+      if (overTop) {
+        overTop.before(card);
+        manualOrder = true;
+      } else if (overBottom) {
+        overBottom.after(card);
+        manualOrder = true;
+      }
+
+      grid.querySelectorAll('.drag-over-top, .drag-over-bottom').forEach(el => {
+        el.classList.remove('drag-over-top', 'drag-over-bottom');
+      });
+      card.classList.remove('dragging');
+      if (touchClone) {
+        touchClone.remove();
+        touchClone = null;
+      }
+      draggedCard = null;
+      touchActive = false;
+    };
+
+    handle.addEventListener('touchend', endTouchDrag);
+    handle.addEventListener('touchcancel', endTouchDrag);
+  }
+
+  // Clean up draggable attribute on mouseup
+  document.addEventListener('mouseup', () => {
+    grid.querySelectorAll('.enemy-card[draggable]').forEach(c => {
+      c.removeAttribute('draggable');
+    });
+  });
+
+  // ========================================
   // UI UPDATES
   // ========================================
   function updateGlobalStats() {
@@ -702,13 +892,13 @@
       svg.style.transition = 'transform 0.25s ease';
     }
     const label = collapseAllBtn.querySelector('.btn-label');
-    if (label) label.textContent = allCollapsed ? 'Expandir' : 'Colapsar';
+    if (label) label.textContent = allCollapsed ? (i18n['em.expand'] || 'Expand') : (i18n['em.collapse'] || 'Collapse');
   });
 
   // Clear all
   clearBtn.addEventListener('click', () => {
     const { confirmClear } = getSettings();
-    if (confirmClear && !confirm('¿Eliminar todos los enemigos del campo de batalla?')) {
+    if (confirmClear && !confirm(i18n['js.confirmClear'] || 'Remove all enemies from the battlefield?')) {
       return;
     }
     grid.innerHTML = '';
@@ -1963,6 +2153,82 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     text-align: center;
+  }
+
+  /* ==========================================
+     DRAG AND DROP
+     ========================================== */
+  .drag-handle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 28px;
+    color: var(--gh-text-muted);
+    cursor: grab;
+    opacity: 0.35;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+    touch-action: none;
+  }
+
+  .drag-handle:hover {
+    opacity: 1;
+    color: var(--gh-gold-400);
+  }
+
+  .drag-handle:active {
+    cursor: grabbing;
+  }
+
+  .drag-handle svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .enemy-card.dragging {
+    opacity: 0.3;
+  }
+
+  .enemy-card.dragging .card-frame {
+    border-color: var(--gh-gold-500);
+    border-style: dashed;
+  }
+
+  .enemy-card.drag-over-top,
+  .enemy-card.drag-over-bottom {
+    position: relative;
+  }
+
+  .enemy-card.drag-over-top::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gh-gold-400);
+    border-radius: 2px;
+    z-index: 10;
+    box-shadow: 0 0 10px var(--gh-gold-500);
+  }
+
+  .enemy-card.drag-over-bottom::after {
+    content: '';
+    position: absolute;
+    bottom: -3px;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--gh-gold-400);
+    border-radius: 2px;
+    z-index: 10;
+    box-shadow: 0 0 10px var(--gh-gold-500);
+  }
+
+  .drag-clone .card-frame {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(184, 134, 42, 0.3);
+    border-color: var(--gh-gold-500);
   }
 
   /* ==========================================
