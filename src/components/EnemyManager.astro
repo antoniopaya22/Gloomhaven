@@ -41,6 +41,12 @@
           </svg>
           <span class="btn-label">Limpiar</span>
         </button>
+        <button class="btn btn-ghost" id="collapseAllBtn" title="Colapsar todos" disabled>
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span class="btn-label">Colapsar</span>
+        </button>
         <button class="btn btn-primary" id="addEnemyBtn">
           <svg viewBox="0 0 24 24" fill="none">
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"/>
@@ -118,21 +124,12 @@
         />
       </div>
 
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="enemyNumber">
-            <span class="label-icon">#</span>
-            Número
-          </label>
-          <input type="number" id="enemyNumber" class="form-input" value="1" min="1" max="99" />
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="enemyHealth">
-            <span class="label-icon">❤️</span>
-            Vida Máxima
-          </label>
-          <input type="number" id="enemyHealth" class="form-input" value="10" min="1" max="999" />
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="enemyHealth">
+          <span class="label-icon">❤️</span>
+          Vida Máxima
+        </label>
+        <input type="number" id="enemyHealth" class="form-input" value="10" min="1" max="999" />
       </div>
 
       <div class="form-group">
@@ -152,7 +149,7 @@
             <svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="3" stroke-linecap="round"/></svg>
           </button>
         </div>
-        <span class="form-hint">Los enemigos se crearán con números consecutivos</span>
+        <span class="form-hint">Los números se asignan automáticamente reutilizando huecos libres</span>
       </div>
 
       <div class="form-group">
@@ -180,6 +177,13 @@
             <span class="type-card boss">
               <span class="type-icon">👑</span>
               <span class="type-name">Jefe</span>
+            </span>
+          </label>
+          <label class="type-option">
+            <input type="radio" name="enemyType" value="objective" />
+            <span class="type-card objective">
+              <span class="type-icon">🎯</span>
+              <span class="type-name">Objetivo</span>
             </span>
           </label>
         </div>
@@ -241,20 +245,22 @@
         <div class="health-section">
           <div class="health-label">Puntos de Vida</div>
           <div class="health-controls">
-            <div class="damage-controls">
-              <button class="health-btn damage-btn" data-amount="-10" aria-label="-10 vida">-10</button>
-              <button class="health-btn damage-btn" data-amount="-5" aria-label="-5 vida">-5</button>
-              <button class="health-btn damage-btn" data-amount="-1" aria-label="-1 vida">-1</button>
-            </div>
             <div class="health-display">
               <span class="health-current">10</span>
               <span class="health-divider">/</span>
               <input type="number" class="health-max" value="10" min="1" max="999" aria-label="Vida máxima"/>
             </div>
-            <div class="heal-controls">
-              <button class="health-btn heal-btn" data-amount="1" aria-label="+1 vida">+1</button>
-              <button class="health-btn heal-btn" data-amount="5" aria-label="+5 vida">+5</button>
-              <button class="health-btn heal-btn" data-amount="10" aria-label="+10 vida">+10</button>
+            <div class="health-buttons-row">
+              <div class="damage-controls">
+                <button class="health-btn damage-btn" data-amount="-10" aria-label="-10 vida">-10</button>
+                <button class="health-btn damage-btn" data-amount="-5" aria-label="-5 vida">-5</button>
+                <button class="health-btn damage-btn" data-amount="-1" aria-label="-1 vida">-1</button>
+              </div>
+              <div class="heal-controls">
+                <button class="health-btn heal-btn" data-amount="1" aria-label="+1 vida">+1</button>
+                <button class="health-btn heal-btn" data-amount="5" aria-label="+5 vida">+5</button>
+                <button class="health-btn heal-btn" data-amount="10" aria-label="+10 vida">+10</button>
+              </div>
             </div>
           </div>
         </div>
@@ -331,7 +337,7 @@
     id: string;
     name: string;
     number: number;
-    type: 'normal' | 'elite' | 'boss';
+    type: 'normal' | 'elite' | 'boss' | 'objective';
     currentHp: number;
     maxHp: number;
     statuses: Set<string>;
@@ -349,6 +355,7 @@
   const modal = document.getElementById('addModal')!;
   const template = document.getElementById('enemyCardTemplate') as HTMLTemplateElement;
   const clearBtn = document.getElementById('clearAllBtn') as HTMLButtonElement;
+  const collapseAllBtn = document.getElementById('collapseAllBtn') as HTMLButtonElement;
 
   // Stats
   const enemyCountEl = document.getElementById('enemyCount')!;
@@ -356,7 +363,6 @@
 
   // Form
   const nameInput = document.getElementById('enemyName') as HTMLInputElement;
-  const numberInput = document.getElementById('enemyNumber') as HTMLInputElement;
   const healthInput = document.getElementById('enemyHealth') as HTMLInputElement;
   const quantityInput = document.getElementById('enemyQuantity') as HTMLInputElement;
 
@@ -411,7 +417,7 @@
     return `enemy-${Date.now()}-${++idCounter}`;
   }
 
-  function createEnemy(name: string, number: number, maxHp: number, type: 'normal' | 'elite' | 'boss'): HTMLElement {
+  function createEnemy(name: string, number: number, maxHp: number, type: 'normal' | 'elite' | 'boss' | 'objective'): HTMLElement {
     const id = generateId();
     const state: EnemyState = {
       id,
@@ -439,10 +445,25 @@
 
     // Set type badge
     const typeBadge = card.querySelector('.enemy-type-badge .type-text') as HTMLElement;
-    typeBadge.textContent = type === 'elite' ? 'Élite' : type === 'boss' ? 'Jefe' : 'Normal';
+    const typeLabels: Record<string, string> = { elite: 'Élite', boss: 'Jefe', objective: 'Objetivo', normal: 'Normal' };
+    typeBadge.textContent = typeLabels[type] || 'Normal';
+
+    // Hide status section for objective type
+    if (type === 'objective') {
+      const statusSection = card.querySelector('.status-section') as HTMLElement;
+      const divider = card.querySelector('.section-divider') as HTMLElement;
+      if (statusSection) statusSection.style.display = 'none';
+      if (divider) divider.style.display = 'none';
+    }
 
     setupCardEvents(card, id);
     updateHealthBar(card, state);
+
+    // Compact cards setting
+    if (getSettings().compactCards) {
+      state.collapsed = true;
+      card.classList.add('collapsed');
+    }
 
     return card;
   }
@@ -459,6 +480,7 @@
     // Number change
     card.querySelector('.badge-input')?.addEventListener('change', (e) => {
       state.number = parseInt((e.target as HTMLInputElement).value) || 1;
+      sortEnemiesInGrid();
     });
 
     // Max HP change
@@ -505,6 +527,16 @@
     });
   }
 
+  function getSettings() {
+    const root = document.documentElement;
+    return {
+      animations: root.dataset.animations !== 'off',
+      confirmClear: root.dataset.confirmClear !== 'off',
+      autoRemoveDead: root.dataset.autoRemoveDead !== 'off',
+      compactCards: root.dataset.compactCards === 'on',
+    };
+  }
+
   function modifyHealth(card: HTMLElement, id: string, amount: number) {
     const state = enemies.get(id);
     if (!state) return;
@@ -514,8 +546,8 @@
     updateHealthBar(card, state);
     updateGlobalStats();
 
-    // Death animation
-    if (state.currentHp <= 0) {
+    // Death handling
+    if (state.currentHp <= 0 && getSettings().autoRemoveDead) {
       deleteEnemy(card, id, true);
     }
   }
@@ -562,22 +594,52 @@
     card.classList.toggle('collapsed', state.collapsed);
   }
 
+  function findLowestAvailableNumber(name: string): number {
+    const usedNumbers = new Set<number>();
+    enemies.forEach(e => {
+      if (e.name === name) usedNumbers.add(e.number);
+    });
+    let num = 1;
+    while (usedNumbers.has(num)) num++;
+    return num;
+  }
+
+  function sortEnemiesInGrid() {
+    const cards = Array.from(grid.querySelectorAll('.enemy-card')) as HTMLElement[];
+    cards.sort((a, b) => {
+      const stateA = enemies.get(a.dataset.enemyId || '');
+      const stateB = enemies.get(b.dataset.enemyId || '');
+      if (!stateA || !stateB) return 0;
+      // Sort by name first, then by number
+      const nameCompare = stateA.name.localeCompare(stateB.name);
+      if (nameCompare !== 0) return nameCompare;
+      return stateA.number - stateB.number;
+    });
+    cards.forEach(card => grid.appendChild(card));
+  }
+
   function duplicateEnemy(card: HTMLElement, id: string) {
     const state = enemies.get(id);
     if (!state) return;
 
-    // Find max number for same name
-    let maxNum = 0;
-    enemies.forEach(e => {
-      if (e.name === state.name) maxNum = Math.max(maxNum, e.number);
-    });
-
-    const newCard = createEnemy(state.name, maxNum + 1, state.maxHp, state.type);
-    card.after(newCard);
+    const newNum = findLowestAvailableNumber(state.name);
+    const newCard = createEnemy(state.name, newNum, state.maxHp, state.type);
+    grid.appendChild(newCard);
+    sortEnemiesInGrid();
     updateUI();
   }
 
   function deleteEnemy(card: HTMLElement, id: string, isDeath: boolean) {
+    const { animations } = getSettings();
+
+    if (!animations) {
+      enemies.delete(id);
+      card.remove();
+      sortEnemiesInGrid();
+      updateUI();
+      return;
+    }
+
     if (isDeath) {
       card.classList.add('dying');
       setTimeout(() => {
@@ -585,6 +647,7 @@
         setTimeout(() => {
           enemies.delete(id);
           card.remove();
+          sortEnemiesInGrid();
           updateUI();
         }, 400);
       }, 500);
@@ -593,6 +656,7 @@
       setTimeout(() => {
         enemies.delete(id);
         card.remove();
+        sortEnemiesInGrid();
         updateUI();
       }, 300);
     }
@@ -614,16 +678,42 @@
     emptyState.style.display = hasEnemies ? 'none' : 'flex';
     grid.style.display = hasEnemies ? 'grid' : 'none';
     clearBtn.disabled = !hasEnemies;
+    collapseAllBtn.disabled = !hasEnemies;
     updateGlobalStats();
   }
 
+  // Collapse / Expand all
+  let allCollapsed = false;
+  collapseAllBtn.addEventListener('click', () => {
+    allCollapsed = !allCollapsed;
+    const cards = grid.querySelectorAll('.enemy-card') as NodeListOf<HTMLElement>;
+    cards.forEach(card => {
+      const id = card.dataset.enemyId || '';
+      const state = enemies.get(id);
+      if (state) {
+        state.collapsed = allCollapsed;
+        card.classList.toggle('collapsed', allCollapsed);
+      }
+    });
+    // Update button icon direction
+    const svg = collapseAllBtn.querySelector('svg');
+    if (svg) {
+      svg.style.transform = allCollapsed ? 'rotate(-180deg)' : 'rotate(0deg)';
+      svg.style.transition = 'transform 0.25s ease';
+    }
+    const label = collapseAllBtn.querySelector('.btn-label');
+    if (label) label.textContent = allCollapsed ? 'Expandir' : 'Colapsar';
+  });
+
   // Clear all
   clearBtn.addEventListener('click', () => {
-    if (confirm('¿Eliminar todos los enemigos del campo de batalla?')) {
-      grid.innerHTML = '';
-      enemies.clear();
-      updateUI();
+    const { confirmClear } = getSettings();
+    if (confirmClear && !confirm('¿Eliminar todos los enemigos del campo de batalla?')) {
+      return;
     }
+    grid.innerHTML = '';
+    enemies.clear();
+    updateUI();
   });
 
   // ========================================
@@ -638,16 +728,17 @@
       return;
     }
 
-    const startNum = parseInt(numberInput.value) || 1;
     const hp = parseInt(healthInput.value) || 10;
     const qty = parseInt(quantityInput.value) || 1;
-    const type = (document.querySelector('input[name="enemyType"]:checked') as HTMLInputElement)?.value as 'normal' | 'elite' | 'boss' || 'normal';
+    const type = (document.querySelector('input[name="enemyType"]:checked') as HTMLInputElement)?.value as 'normal' | 'elite' | 'boss' | 'objective' || 'normal';
 
     for (let i = 0; i < qty; i++) {
-      const card = createEnemy(name, startNum + i, hp, type);
+      const num = findLowestAvailableNumber(name);
+      const card = createEnemy(name, num, hp, type);
       grid.appendChild(card);
     }
 
+    sortEnemiesInGrid();
     closeModal();
     updateUI();
   });
@@ -680,12 +771,12 @@
   .section-header {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    padding: var(--space-5);
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
     background: linear-gradient(135deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
     border: 1px solid var(--gh-border-default);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.03);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md), inset 0 1px 0 rgba(255,255,255,0.03);
   }
 
   @media (min-width: 768px) {
@@ -699,28 +790,28 @@
   .header-left {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .section-icon {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 56px;
-    height: 56px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(145deg, var(--gh-bg-light) 0%, var(--gh-bg-medium) 100%);
-    border: 2px solid var(--gh-gold-600);
-    border-radius: var(--radius-lg);
+    border: 1.5px solid var(--gh-gold-600);
+    border-radius: var(--radius-md);
     color: var(--gh-gold-400);
     box-shadow:
-      inset 0 2px 4px rgba(255,255,255,0.05),
-      0 4px 12px rgba(0,0,0,0.3),
-      0 0 20px rgba(184, 134, 42, 0.15);
+      inset 0 1px 2px rgba(255,255,255,0.05),
+      0 2px 8px rgba(0,0,0,0.3),
+      0 0 12px rgba(184, 134, 42, 0.15);
   }
 
   .section-icon svg {
-    width: 28px;
-    height: 28px;
+    width: 18px;
+    height: 18px;
   }
 
   .section-title-group {
@@ -731,7 +822,7 @@
 
   .section-title {
     font-family: var(--font-heading);
-    font-size: var(--text-xl);
+    font-size: var(--text-base);
     font-weight: 600;
     color: var(--gh-text-primary);
     margin: 0;
@@ -762,11 +853,11 @@
   .quick-stats {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-3) var(--space-4);
+    gap: var(--space-3);
+    padding: var(--space-2) var(--space-3);
     background: var(--gh-bg-dark);
     border: 1px solid var(--gh-border-subtle);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
   }
 
   .quick-stat {
@@ -778,7 +869,7 @@
 
   .quick-stat-value {
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
     font-weight: 700;
     color: var(--gh-gold-400);
     line-height: 1;
@@ -793,7 +884,7 @@
 
   .quick-stat-divider {
     width: 1px;
-    height: 36px;
+    height: 24px;
     background: var(--gh-border-default);
   }
 
@@ -811,9 +902,9 @@
     align-items: center;
     justify-content: center;
     gap: var(--space-2);
-    padding: var(--space-3) var(--space-5);
+    padding: var(--space-2) var(--space-4);
     font-family: var(--font-heading);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-weight: 600;
     text-transform: uppercase;
     letter-spacing: 0.05em;
@@ -824,8 +915,8 @@
   }
 
   .btn svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
   }
 
   .btn-primary {
@@ -875,13 +966,13 @@
   }
 
   .btn-lg {
-    padding: var(--space-4) var(--space-6);
-    font-size: var(--text-base);
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-sm);
   }
 
   .btn-lg svg {
-    width: 22px;
-    height: 22px;
+    width: 16px;
+    height: 16px;
   }
 
   @media (max-width: 480px) {
@@ -902,20 +993,14 @@
 
   .enemies-grid {
     display: none;
-    grid-template-columns: 1fr;
-    gap: var(--space-5);
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));
+    gap: var(--space-3);
+    justify-items: center;
   }
 
-  @media (min-width: 768px) {
-    .enemies-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-
-  @media (min-width: 1200px) {
-    .enemies-grid {
-      grid-template-columns: repeat(3, 1fr);
-    }
+  .enemies-grid > * {
+    width: 100%;
+    max-width: 380px;
   }
 
   /* ==========================================
@@ -926,11 +1011,11 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: var(--space-5);
-    padding: var(--space-12) var(--space-4);
+    gap: var(--space-3);
+    padding: var(--space-8) var(--space-4);
     background: linear-gradient(180deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
     border: 2px dashed var(--gh-border-default);
-    border-radius: var(--radius-2xl);
+    border-radius: var(--radius-xl);
     text-align: center;
   }
 
@@ -939,8 +1024,8 @@
   }
 
   .empty-circle {
-    width: 120px;
-    height: 120px;
+    width: 80px;
+    height: 80px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -962,15 +1047,15 @@
 
   .empty-title {
     font-family: var(--font-heading);
-    font-size: var(--text-xl);
+    font-size: var(--text-base);
     color: var(--gh-text-primary);
     margin: 0;
   }
 
   .empty-text {
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     color: var(--gh-text-muted);
-    max-width: 400px;
+    max-width: 350px;
     margin: 0;
     line-height: var(--leading-relaxed);
   }
@@ -1000,13 +1085,13 @@
 
   .modal {
     width: 100%;
-    max-width: 500px;
+    max-width: 420px;
     max-height: 90vh;
     overflow-y: auto;
     background: linear-gradient(180deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
     border: 1px solid var(--gh-border-default);
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-xl), 0 0 60px rgba(184, 134, 42, 0.1);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-xl), 0 0 40px rgba(184, 134, 42, 0.1);
     transform: scale(0.9) translateY(20px);
     transition: transform var(--transition-slow);
   }
@@ -1018,8 +1103,8 @@
   .modal-header {
     display: flex;
     align-items: flex-start;
-    gap: var(--space-4);
-    padding: var(--space-5);
+    gap: var(--space-3);
+    padding: var(--space-4);
     border-bottom: 1px solid var(--gh-border-subtle);
     background: linear-gradient(180deg, rgba(184, 134, 42, 0.05) 0%, transparent 100%);
   }
@@ -1028,17 +1113,17 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     background: linear-gradient(135deg, var(--gh-gold-600) 0%, var(--gh-gold-700) 100%);
-    border-radius: var(--radius-lg);
+    border-radius: var(--radius-md);
     color: var(--gh-text-dark);
     flex-shrink: 0;
   }
 
   .modal-icon svg {
-    width: 24px;
-    height: 24px;
+    width: 18px;
+    height: 18px;
   }
 
   .modal-title-group {
@@ -1047,7 +1132,7 @@
 
   .modal-title {
     font-family: var(--font-heading);
-    font-size: var(--text-xl);
+    font-size: var(--text-lg);
     color: var(--gh-text-primary);
     margin: 0 0 var(--space-1) 0;
   }
@@ -1062,11 +1147,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: 30px;
+    height: 30px;
     background: var(--gh-bg-light);
     border: 1px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     color: var(--gh-text-muted);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1079,22 +1164,22 @@
   }
 
   .modal-close svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   .modal-body {
-    padding: var(--space-5);
+    padding: var(--space-4);
     display: flex;
     flex-direction: column;
-    gap: var(--space-5);
+    gap: var(--space-4);
   }
 
   .modal-footer {
     display: flex;
     justify-content: flex-end;
-    gap: var(--space-3);
-    padding: var(--space-4) var(--space-5);
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
     border-top: 1px solid var(--gh-border-subtle);
     background: var(--gh-bg-dark);
   }
@@ -1135,12 +1220,12 @@
   }
 
   .form-input {
-    padding: var(--space-3) var(--space-4);
+    padding: var(--space-2) var(--space-3);
     background: var(--gh-bg-darkest);
-    border: 2px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gh-border-default);
+    border-radius: var(--radius-sm);
     color: var(--gh-text-primary);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     transition: all var(--transition-fast);
   }
 
@@ -1169,20 +1254,20 @@
     align-items: center;
     gap: var(--space-2);
     background: var(--gh-bg-darkest);
-    border: 2px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
-    padding: var(--space-2);
+    border: 1.5px solid var(--gh-border-default);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1);
   }
 
   .qty-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     background: var(--gh-bg-light);
     border: 1px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     color: var(--gh-text-primary);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1195,8 +1280,8 @@
   }
 
   .qty-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   .qty-display {
@@ -1208,12 +1293,12 @@
   }
 
   .qty-input {
-    width: 50px;
+    width: 40px;
     background: transparent;
     border: none;
     color: var(--gh-gold-400);
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
     font-weight: 700;
     text-align: center;
   }
@@ -1230,7 +1315,7 @@
   /* Enemy Type Selector */
   .enemy-type-selector {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: var(--space-2);
   }
 
@@ -1246,11 +1331,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-3);
+    gap: var(--space-1);
+    padding: var(--space-2);
     background: var(--gh-bg-darkest);
-    border: 2px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gh-border-default);
+    border-radius: var(--radius-sm);
     transition: all var(--transition-fast);
   }
 
@@ -1280,8 +1365,18 @@
     box-shadow: 0 0 15px rgba(220, 69, 69, 0.2);
   }
 
+  .type-card.objective {
+    border-color: var(--gh-blue-600);
+  }
+
+  .type-option input:checked + .type-card.objective {
+    border-color: var(--gh-blue-500);
+    background: rgba(109, 184, 232, 0.1);
+    box-shadow: 0 0 15px rgba(109, 184, 232, 0.2);
+  }
+
   .type-icon {
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
   }
 
   .type-name {
@@ -1348,10 +1443,10 @@
   /* Card Frame */
   .card-frame {
     background: linear-gradient(180deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
-    border: 2px solid var(--gh-border-default);
-    border-radius: var(--radius-xl);
+    border: 1.5px solid var(--gh-border-default);
+    border-radius: var(--radius-lg);
     overflow: hidden;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-md);
     transition: all var(--transition-base);
   }
 
@@ -1392,12 +1487,32 @@
     border-color: var(--gh-red-500);
   }
 
+  /* Objective styling */
+  .enemy-card[data-enemy-type="objective"] .card-frame {
+    border-color: var(--gh-blue-600);
+    background: linear-gradient(180deg, rgba(109, 184, 232, 0.1) 0%, var(--gh-bg-dark) 100%);
+  }
+
+  .enemy-card[data-enemy-type="objective"]:hover .card-frame {
+    border-color: var(--gh-blue-500);
+    box-shadow: var(--shadow-xl), 0 0 30px rgba(109, 184, 232, 0.2);
+  }
+
+  .enemy-card[data-enemy-type="objective"] .enemy-badge {
+    background: linear-gradient(135deg, var(--gh-blue-600) 0%, var(--gh-blue-700) 100%);
+    border-color: var(--gh-blue-500);
+  }
+
+  .enemy-card[data-enemy-type="objective"] .type-text {
+    color: var(--gh-blue-400);
+  }
+
   /* Card Header */
   .card-header {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    padding: var(--space-3) var(--space-4);
+    gap: var(--space-2);
+    padding: var(--space-2) var(--space-3);
     background: linear-gradient(180deg, rgba(255,255,255,0.03) 0%, transparent 100%);
     border-bottom: 1px solid var(--gh-border-subtle);
   }
@@ -1406,12 +1521,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 48px;
-    height: 48px;
+    width: 32px;
+    height: 32px;
     background: linear-gradient(135deg, var(--gh-purple-600) 0%, var(--gh-purple-700) 100%);
-    border: 2px solid var(--gh-purple-500);
-    border-radius: var(--radius-md);
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    border: 1.5px solid var(--gh-purple-500);
+    border-radius: var(--radius-sm);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     flex-shrink: 0;
   }
 
@@ -1421,7 +1536,7 @@
     border: none;
     color: var(--gh-text-dark);
     font-family: var(--font-display);
-    font-size: var(--text-xl);
+    font-size: var(--text-sm);
     font-weight: 700;
     text-align: center;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
@@ -1446,9 +1561,9 @@
     border-bottom: 1px solid transparent;
     color: var(--gh-text-primary);
     font-family: var(--font-heading);
-    font-size: var(--text-base);
+    font-size: var(--text-sm);
     font-weight: 600;
-    padding: var(--space-1) 0;
+    padding: 1px 0;
     transition: border-color var(--transition-fast);
   }
 
@@ -1493,18 +1608,18 @@
   /* Card Controls */
   .card-controls {
     display: flex;
-    gap: var(--space-1);
+    gap: 2px;
   }
 
   .ctrl-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 36px;
-    height: 36px;
+    width: 28px;
+    height: 28px;
     background: var(--gh-bg-light);
     border: 1px solid var(--gh-border-subtle);
-    border-radius: var(--radius-md);
+    border-radius: var(--radius-sm);
     color: var(--gh-text-muted);
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1516,8 +1631,8 @@
   }
 
   .ctrl-btn svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     transition: transform var(--transition-base);
   }
 
@@ -1543,15 +1658,15 @@
 
   /* Health Bar */
   .health-bar-container {
-    padding: 0 var(--space-4);
+    padding: 0 var(--space-3);
     background: var(--gh-bg-darkest);
   }
 
   .health-bar-track {
     position: relative;
-    height: 8px;
+    height: 5px;
     background: var(--gh-bg-light);
-    border-radius: 4px;
+    border-radius: 3px;
     overflow: hidden;
   }
 
@@ -1562,7 +1677,7 @@
     height: 100%;
     width: 100%;
     background: linear-gradient(90deg, var(--gh-green-600) 0%, var(--gh-green-400) 100%);
-    border-radius: 4px;
+    border-radius: 3px;
     transition: width var(--transition-base), background var(--transition-base);
   }
 
@@ -1580,11 +1695,10 @@
 
   /* Card Body */
   .card-body {
-    padding: var(--space-4);
+    padding: var(--space-3);
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
-    max-height: 600px;
+    gap: var(--space-3);
     overflow: hidden;
     transition: all var(--transition-base);
   }
@@ -1600,7 +1714,7 @@
   .health-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: var(--space-2);
   }
 
   .health-label {
@@ -1615,10 +1729,16 @@
 
   .health-controls {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .health-buttons-row {
+    display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-3);
-    flex-wrap: wrap;
+    gap: var(--space-2);
   }
 
   .damage-controls,
@@ -1631,12 +1751,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
-    padding: 0 var(--space-2);
-    border-radius: var(--radius-md);
+    min-width: 30px;
+    height: 28px;
+    padding: 0 var(--space-1);
+    border-radius: var(--radius-sm);
     font-family: var(--font-heading);
-    font-size: var(--text-sm);
+    font-size: var(--text-xs);
     font-weight: 700;
     cursor: pointer;
     transition: all var(--transition-fast);
@@ -1678,37 +1798,37 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: var(--space-1);
-    min-width: 100px;
-    padding: var(--space-2) var(--space-4);
+    gap: 2px;
+    min-width: 80px;
+    padding: var(--space-1) var(--space-3);
     background: var(--gh-bg-darkest);
-    border: 2px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gh-border-default);
+    border-radius: var(--radius-sm);
   }
 
   .health-current {
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: var(--text-lg);
     font-weight: 700;
     color: var(--gh-green-400);
-    min-width: 36px;
+    min-width: 28px;
     text-align: right;
     transition: color var(--transition-base);
   }
 
   .health-divider {
-    font-size: var(--text-lg);
+    font-size: var(--text-sm);
     color: var(--gh-text-muted);
   }
 
   .health-max {
-    width: 50px;
+    width: 38px;
     background: transparent;
     border: none;
     border-bottom: 1px solid var(--gh-border-default);
     color: var(--gh-text-secondary);
     font-family: var(--font-heading);
-    font-size: var(--text-lg);
+    font-size: var(--text-sm);
     font-weight: 600;
     text-align: left;
     transition: border-color var(--transition-fast);
@@ -1742,13 +1862,13 @@
   .status-section {
     display: flex;
     flex-direction: column;
-    gap: var(--space-4);
+    gap: var(--space-2);
   }
 
   .status-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-1);
   }
 
   .status-header {
@@ -1801,11 +1921,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--space-1);
-    padding: var(--space-2);
+    gap: 1px;
+    padding: var(--space-1);
     background: var(--gh-bg-darkest);
-    border: 2px solid var(--gh-border-subtle);
-    border-radius: var(--radius-md);
+    border: 1.5px solid var(--gh-border-subtle);
+    border-radius: var(--radius-sm);
     cursor: pointer;
     opacity: 0.5;
     transition: all var(--transition-fast);
@@ -1831,13 +1951,13 @@
   }
 
   .status-emoji {
-    font-size: var(--text-xl);
+    font-size: var(--text-base);
     line-height: 1;
   }
 
   .status-name {
     font-family: var(--font-heading);
-    font-size: 9px;
+    font-size: 7px;
     font-weight: 600;
     color: var(--gh-text-muted);
     text-transform: uppercase;
@@ -1850,21 +1970,21 @@
      ========================================== */
   @media (max-width: 640px) {
     .section-header {
-      padding: var(--space-4);
+      padding: var(--space-3);
     }
 
     .section-icon {
-      width: 48px;
-      height: 48px;
+      width: 30px;
+      height: 30px;
     }
 
     .section-icon svg {
-      width: 24px;
-      height: 24px;
+      width: 16px;
+      height: 16px;
     }
 
     .section-title {
-      font-size: var(--text-lg);
+      font-size: var(--text-sm);
     }
 
     .quick-stats {
@@ -1872,33 +1992,33 @@
     }
 
     .enemy-badge {
-      width: 42px;
-      height: 42px;
+      width: 28px;
+      height: 28px;
     }
 
     .badge-input {
-      font-size: var(--text-lg);
-    }
-
-    .card-body {
-      padding: var(--space-3);
-      gap: var(--space-3);
-    }
-
-    .health-btn {
-      min-width: 36px;
-      height: 36px;
       font-size: var(--text-xs);
     }
 
+    .card-body {
+      padding: var(--space-2);
+      gap: var(--space-2);
+    }
+
+    .health-btn {
+      min-width: 28px;
+      height: 26px;
+      font-size: 0.6rem;
+    }
+
     .health-display {
-      min-width: 90px;
-      padding: var(--space-2) var(--space-3);
+      min-width: 72px;
+      padding: var(--space-1) var(--space-2);
     }
 
     .health-current {
-      font-size: var(--text-xl);
-      min-width: 30px;
+      font-size: var(--text-base);
+      min-width: 24px;
     }
 
     .status-grid {
@@ -1910,28 +2030,28 @@
     }
 
     .status-emoji {
-      font-size: var(--text-lg);
+      font-size: var(--text-sm);
     }
 
     .status-name {
-      font-size: 8px;
+      font-size: 6px;
     }
 
     .ctrl-btn {
-      width: 32px;
-      height: 32px;
+      width: 24px;
+      height: 24px;
     }
 
     .ctrl-btn svg {
-      width: 16px;
-      height: 16px;
+      width: 12px;
+      height: 12px;
     }
   }
 
   @media (max-width: 400px) {
     .health-controls {
       flex-direction: column;
-      gap: var(--space-2);
+      gap: var(--space-1);
     }
 
     .damage-controls,
@@ -1950,28 +2070,28 @@
     }
 
     .status-btn {
-      padding: var(--space-2);
+      padding: var(--space-1);
     }
 
     .status-emoji {
-      font-size: var(--text-xl);
+      font-size: var(--text-base);
     }
   }
 
   /* Touch devices */
   @media (hover: none) and (pointer: coarse) {
     .health-btn {
-      min-width: 44px;
-      height: 44px;
+      min-width: 36px;
+      height: 34px;
     }
 
     .status-btn {
-      padding: var(--space-3);
+      padding: var(--space-2);
     }
 
     .ctrl-btn {
-      width: 40px;
-      height: 40px;
+      width: 32px;
+      height: 32px;
     }
   }
 </style>

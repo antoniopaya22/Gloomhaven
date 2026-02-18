@@ -47,29 +47,6 @@ import EnemyManager from '../components/EnemyManager.astro';
         </div>
 
         <!-- Navigation -->
-        <nav class="main-nav">
-          <ul class="nav-list">
-            <li class="nav-item active">
-              <a href="#enemigos" class="nav-link">
-                <span class="nav-icon">⚔️</span>
-                <span class="nav-text">Enemigos</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#escenario" class="nav-link">
-                <span class="nav-icon">🗺️</span>
-                <span class="nav-text">Escenario</span>
-              </a>
-            </li>
-            <li class="nav-item">
-              <a href="#historial" class="nav-link">
-                <span class="nav-icon">📜</span>
-                <span class="nav-text">Historial</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
-
         <!-- Header Actions -->
         <div class="header-actions">
           <button class="action-btn" id="helpBtn" aria-label="Ayuda">
@@ -104,9 +81,6 @@ import EnemyManager from '../components/EnemyManager.astro';
           <button class="mobile-nav-close" id="mobileNavClose">✕</button>
         </div>
         <ul class="mobile-nav-list">
-          <li><a href="#enemigos" class="mobile-nav-link active">⚔️ Enemigos</a></li>
-          <li><a href="#escenario" class="mobile-nav-link">🗺️ Escenario</a></li>
-          <li><a href="#historial" class="mobile-nav-link">📜 Historial</a></li>
         </ul>
         <div class="mobile-nav-footer">
           <button class="mobile-nav-btn">❓ Ayuda</button>
@@ -115,30 +89,125 @@ import EnemyManager from '../components/EnemyManager.astro';
       </nav>
     </div>
 
-    <!-- Scenario Info Bar -->
-    <div class="scenario-bar">
-      <div class="scenario-bar-inner container">
-        <div class="scenario-info">
-          <span class="scenario-label">Escenario Actual</span>
-          <span class="scenario-name">Sin escenario seleccionado</span>
-        </div>
-        <div class="scenario-stats">
-          <div class="stat">
-            <span class="stat-icon">⏱️</span>
-            <span class="stat-value">Ronda <strong>1</strong></span>
+    <!-- Help Modal -->
+    <div class="info-modal-overlay" id="helpModal">
+      <div class="info-modal">
+        <div class="info-modal-header">
+          <div class="info-modal-icon help-icon">
+            <svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/><path d="M9 9a3 3 0 115 2.83c-.5.29-1 .88-1 1.67v.5" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
           </div>
-          <div class="stat-divider"></div>
-          <div class="stat">
-            <span class="stat-icon">💀</span>
-            <span class="stat-value">Derrotados <strong>0</strong></span>
+          <div class="info-modal-title-group">
+            <h3 class="info-modal-title">Guía de Uso</h3>
+            <p class="info-modal-subtitle">Aprende a usar el gestor de enemigos</p>
+          </div>
+          <button class="info-modal-close" data-close-modal="helpModal" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="info-modal-body">
+          <div class="help-section">
+            <h4 class="help-heading">⚔️ Añadir Enemigos</h4>
+            <p>Pulsa <strong>"Añadir Enemigo"</strong> para invocar nuevos enemigos al campo de batalla. Puedes elegir nombre, vida máxima, cantidad y tipo.</p>
+          </div>
+          <div class="help-section">
+            <h4 class="help-heading">🎭 Tipos de Enemigo</h4>
+            <ul class="help-list">
+              <li><span class="help-tag normal">👤 Normal</span> Enemigo estándar</li>
+              <li><span class="help-tag elite">⭐ Élite</span> Más fuerte que un normal</li>
+              <li><span class="help-tag boss">👑 Jefe</span> Enemigo principal del escenario</li>
+              <li><span class="help-tag objective">🎯 Objetivo</span> Objetivo de misión — solo tiene vida, sin estados</li>
+            </ul>
+          </div>
+          <div class="help-section">
+            <h4 class="help-heading">❤️ Gestión de Vida</h4>
+            <p>Usa los botones <strong class="text-red">rojos (-)</strong> para aplicar daño y los <strong class="text-green">verdes (+)</strong> para curar. Si la vida llega a 0, el enemigo muere automáticamente.</p>
+          </div>
+          <div class="help-section">
+            <h4 class="help-heading">📋 Estados</h4>
+            <ul class="help-list">
+              <li><span class="help-emoji">☠️</span> <strong>Veneno:</strong> +1 daño recibido por ataque</li>
+              <li><span class="help-emoji">🩸</span> <strong>Herida:</strong> 1 daño al inicio del turno</li>
+              <li><span class="help-emoji">⛓️</span> <strong>Inmóvil:</strong> No puede moverse</li>
+              <li><span class="help-emoji">🚫</span> <strong>Desarme:</strong> No puede atacar</li>
+              <li><span class="help-emoji">💫</span> <strong>Aturdido:</strong> Pierde su turno</li>
+              <li><span class="help-emoji">🌀</span> <strong>Confuso:</strong> Desventaja en ataques</li>
+              <li><span class="help-emoji">💪</span> <strong>Fuerte:</strong> Ventaja en ataques</li>
+              <li><span class="help-emoji">🛡️</span> <strong>Escudo:</strong> Reduce daño recibido</li>
+            </ul>
+          </div>
+          <div class="help-section">
+            <h4 class="help-heading">🔢 Numeración</h4>
+            <p>Los números se asignan automáticamente. Si eliminas un enemigo, su número queda libre y será reutilizado por el siguiente que crees con el mismo nombre.</p>
+          </div>
+          <div class="help-section">
+            <h4 class="help-heading">🎮 Controles de Tarjeta</h4>
+            <ul class="help-list">
+              <li><strong>Colapsar:</strong> Minimiza la tarjeta para ahorrar espacio</li>
+              <li><strong>Duplicar:</strong> Crea una copia con el siguiente número libre</li>
+              <li><strong>Eliminar:</strong> Quita al enemigo del campo</li>
+            </ul>
           </div>
         </div>
-        <button class="scenario-btn">
-          <span>Cambiar Escenario</span>
-          <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M9 18l6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
+      </div>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="info-modal-overlay" id="settingsModal">
+      <div class="info-modal">
+        <div class="info-modal-header">
+          <div class="info-modal-icon settings-icon">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 15a3 3 0 100-6 3 3 0 000 6z" stroke="currentColor" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" stroke="currentColor" stroke-width="2"/></svg>
+          </div>
+          <div class="info-modal-title-group">
+            <h3 class="info-modal-title">Configuración</h3>
+            <p class="info-modal-subtitle">Personaliza tu experiencia</p>
+          </div>
+          <button class="info-modal-close" data-close-modal="settingsModal" aria-label="Cerrar">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div class="info-modal-body">
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">🎬 Animaciones</span>
+              <span class="setting-desc">Activar animaciones de muerte y eliminación</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settingAnimations" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">⚠️ Confirmar al limpiar</span>
+              <span class="setting-desc">Pedir confirmación antes de eliminar todos los enemigos</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settingConfirmClear" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">💀 Auto-eliminar al morir</span>
+              <span class="setting-desc">Eliminar automáticamente enemigos al llegar a 0 de vida</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settingAutoRemoveDead" checked />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="setting-item">
+            <div class="setting-info">
+              <span class="setting-label">📏 Tarjetas compactas</span>
+              <span class="setting-desc">Iniciar con las tarjetas de enemigo colapsadas</span>
+            </div>
+            <label class="toggle">
+              <input type="checkbox" id="settingCompactCards" />
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -152,21 +221,7 @@ import EnemyManager from '../components/EnemyManager.astro';
     <!-- Footer -->
     <footer class="footer">
       <div class="footer-inner container">
-        <div class="footer-brand">
-          <span class="footer-logo">◆</span>
-          <span class="footer-text">Gloomhaven Companion</span>
-        </div>
-        <p class="footer-tagline">
-          Creado con pasión para mejorar tu experiencia de juego
-        </p>
-        <div class="footer-links">
-          <a href="#" class="footer-link">Sobre el proyecto</a>
-          <span class="footer-separator">•</span>
-          <a href="#" class="footer-link">Guía de uso</a>
-          <span class="footer-separator">•</span>
-          <a href="#" class="footer-link">Reportar bug</a>
-        </div>
-        <p class="footer-copyright">© 2026 • Versión 1.0.0</p>
+        <p class="footer-copyright">© 2026 <a href="https://antoniopaya22.github.io" target="_blank" rel="noopener noreferrer" class="footer-link">Antonio Payá González</a></p>
       </div>
     </footer>
 
@@ -206,21 +261,114 @@ import EnemyManager from '../components/EnemyManager.astro';
     if (e.key === 'Escape') closeMobileNav();
   });
 
-  // Close mobile nav on link click
-  document.querySelectorAll('.mobile-nav-link').forEach(link => {
-    link.addEventListener('click', closeMobileNav);
+  // ==========================================
+  // HELP & SETTINGS MODALS
+  // ==========================================
+  function openInfoModal(id: string) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeInfoModal(id: string) {
+    const modal = document.getElementById(id);
+    if (!modal) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Desktop buttons
+  document.getElementById('helpBtn')?.addEventListener('click', () => openInfoModal('helpModal'));
+  document.getElementById('settingsBtn')?.addEventListener('click', () => openInfoModal('settingsModal'));
+
+  // Mobile buttons
+  document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      closeMobileNav();
+      const text = btn.textContent?.trim() || '';
+      if (text.includes('Ayuda')) openInfoModal('helpModal');
+      if (text.includes('Configuración')) openInfoModal('settingsModal');
+    });
   });
 
-  // Active nav state
-  document.querySelectorAll('.nav-link, .mobile-nav-link').forEach(link => {
-    link.addEventListener('click', () => {
-      document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-      document.querySelectorAll('.mobile-nav-link').forEach(l => l.classList.remove('active'));
+  // Close buttons inside modals
+  document.querySelectorAll('[data-close-modal]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const modalId = (btn as HTMLElement).dataset.closeModal!;
+      closeInfoModal(modalId);
+    });
+  });
 
-      (link as HTMLElement).closest('.nav-item')?.classList.add('active');
-      if (link.classList.contains('mobile-nav-link')) {
-        link.classList.add('active');
-      }
+  // Close on backdrop click
+  document.querySelectorAll('.info-modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) closeInfoModal(overlay.id);
+    });
+  });
+
+  // Close on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.info-modal-overlay.active').forEach(m => {
+        closeInfoModal(m.id);
+      });
+    }
+  });
+
+  // ==========================================
+  // SETTINGS PERSISTENCE
+  // ==========================================
+  const SETTINGS_KEY = 'gh-settings';
+
+  interface AppSettings {
+    animations: boolean;
+    confirmClear: boolean;
+    autoRemoveDead: boolean;
+    compactCards: boolean;
+  }
+
+  function loadSettings(): AppSettings {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return { animations: true, confirmClear: true, autoRemoveDead: true, compactCards: false };
+  }
+
+  function saveSettings(settings: AppSettings) {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    applySettings(settings);
+  }
+
+  function applySettings(settings: AppSettings) {
+    document.documentElement.dataset.animations = settings.animations ? 'on' : 'off';
+    document.documentElement.dataset.autoRemoveDead = settings.autoRemoveDead ? 'on' : 'off';
+    document.documentElement.dataset.confirmClear = settings.confirmClear ? 'on' : 'off';
+    document.documentElement.dataset.compactCards = settings.compactCards ? 'on' : 'off';
+  }
+
+  // Initialize settings
+  const settings = loadSettings();
+  (document.getElementById('settingAnimations') as HTMLInputElement).checked = settings.animations;
+  (document.getElementById('settingConfirmClear') as HTMLInputElement).checked = settings.confirmClear;
+  (document.getElementById('settingAutoRemoveDead') as HTMLInputElement).checked = settings.autoRemoveDead;
+  (document.getElementById('settingCompactCards') as HTMLInputElement).checked = settings.compactCards;
+  applySettings(settings);
+
+  // Listen for changes
+  const settingInputs: { id: string; key: keyof AppSettings }[] = [
+    { id: 'settingAnimations', key: 'animations' },
+    { id: 'settingConfirmClear', key: 'confirmClear' },
+    { id: 'settingAutoRemoveDead', key: 'autoRemoveDead' },
+    { id: 'settingCompactCards', key: 'compactCards' },
+  ];
+
+  settingInputs.forEach(({ id, key }) => {
+    document.getElementById(id)?.addEventListener('change', (e) => {
+      const s = loadSettings();
+      s[key] = (e.target as HTMLInputElement).checked;
+      saveSettings(s);
     });
   });
 </script>
@@ -242,8 +390,8 @@ import EnemyManager from '../components/EnemyManager.astro';
   .decorative-border {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
-    padding: var(--space-2) var(--space-4);
+    gap: var(--space-3);
+    padding: var(--space-1) var(--space-3);
     background: linear-gradient(90deg,
       transparent 0%,
       rgba(184, 134, 42, 0.1) 20%,
@@ -266,11 +414,11 @@ import EnemyManager from '../components/EnemyManager.astro';
   }
 
   .border-ornament {
-    width: 8px;
-    height: 8px;
+    width: 5px;
+    height: 5px;
     background: var(--gh-gold-500);
     transform: rotate(45deg);
-    box-shadow: 0 0 10px rgba(184, 134, 42, 0.5);
+    box-shadow: 0 0 8px rgba(184, 134, 42, 0.5);
   }
 
   .bottom-border {
@@ -297,22 +445,32 @@ import EnemyManager from '../components/EnemyManager.astro';
   .header-inner {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: var(--space-4);
-    padding-block: var(--space-3);
+    justify-content: center;
+    gap: var(--space-3);
+    padding-block: var(--space-2);
+    position: relative;
   }
 
   /* Brand */
   .brand {
     display: flex;
     align-items: center;
-    gap: var(--space-4);
+    gap: var(--space-3);
+  }
+
+  /* Header Actions */
+  .header-actions {
+    position: absolute;
+    right: var(--space-4);
+    display: none;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   .brand-emblem {
     position: relative;
-    width: 56px;
-    height: 56px;
+    width: 38px;
+    height: 38px;
     flex-shrink: 0;
   }
 
@@ -334,8 +492,8 @@ import EnemyManager from '../components/EnemyManager.astro';
   }
 
   .emblem-icon {
-    width: 32px;
-    height: 32px;
+    width: 22px;
+    height: 22px;
   }
 
   .emblem-glow {
@@ -361,7 +519,7 @@ import EnemyManager from '../components/EnemyManager.astro';
 
   .brand-title {
     font-family: var(--font-display);
-    font-size: var(--text-2xl);
+    font-size: var(--text-xl);
     font-weight: 700;
     background: linear-gradient(135deg,
       var(--gh-gold-200) 0%,
@@ -406,71 +564,6 @@ import EnemyManager from '../components/EnemyManager.astro';
     margin: 0;
   }
 
-  /* Navigation */
-  .main-nav {
-    display: none;
-  }
-
-  @media (min-width: 900px) {
-    .main-nav {
-      display: block;
-    }
-  }
-
-  .nav-list {
-    display: flex;
-    align-items: center;
-    gap: var(--space-1);
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-
-  .nav-item {
-    position: relative;
-  }
-
-  .nav-link {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    color: var(--gh-text-secondary);
-    font-family: var(--font-heading);
-    font-size: var(--text-sm);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    border-radius: var(--radius-md);
-    border: 1px solid transparent;
-    transition: all var(--transition-base);
-    text-decoration: none;
-  }
-
-  .nav-link:hover {
-    color: var(--gh-text-primary);
-    background: rgba(184, 134, 42, 0.1);
-    border-color: var(--gh-border-subtle);
-  }
-
-  .nav-item.active .nav-link {
-    color: var(--gh-gold-400);
-    background: linear-gradient(135deg, rgba(184, 134, 42, 0.15) 0%, rgba(184, 134, 42, 0.05) 100%);
-    border-color: var(--gh-gold-600);
-    box-shadow: 0 0 15px rgba(184, 134, 42, 0.2);
-  }
-
-  .nav-icon {
-    font-size: var(--text-base);
-  }
-
-  /* Header Actions */
-  .header-actions {
-    display: none;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
   @media (min-width: 900px) {
     .header-actions {
       display: flex;
@@ -481,8 +574,8 @@ import EnemyManager from '../components/EnemyManager.astro';
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 32px;
+    height: 32px;
     background: var(--gh-bg-medium);
     border: 1px solid var(--gh-border-default);
     border-radius: var(--radius-md);
@@ -499,19 +592,21 @@ import EnemyManager from '../components/EnemyManager.astro';
   }
 
   .action-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
   }
 
   /* Mobile Menu Button */
   .mobile-menu-btn {
+    position: absolute;
+    right: var(--space-4);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    gap: 5px;
-    width: 44px;
-    height: 44px;
+    gap: 4px;
+    width: 32px;
+    height: 32px;
     background: var(--gh-bg-medium);
     border: 1px solid var(--gh-border-default);
     border-radius: var(--radius-md);
@@ -531,8 +626,8 @@ import EnemyManager from '../components/EnemyManager.astro';
   }
 
   .hamburger-line {
-    width: 20px;
-    height: 2px;
+    width: 16px;
+    height: 1.5px;
     background: var(--gh-gold-500);
     border-radius: 1px;
     transition: all var(--transition-base);
@@ -665,116 +760,16 @@ import EnemyManager from '../components/EnemyManager.astro';
   }
 
   /* ==========================================
-     SCENARIO BAR
-     ========================================== */
-  .scenario-bar {
-    background: linear-gradient(180deg, var(--gh-bg-dark) 0%, var(--gh-bg-medium) 100%);
-    border-bottom: 1px solid var(--gh-border-subtle);
-  }
-
-  .scenario-bar-inner {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--space-3);
-    padding-block: var(--space-3);
-  }
-
-  .scenario-info {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-1);
-  }
-
-  .scenario-label {
-    font-size: var(--text-xs);
-    color: var(--gh-text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-  }
-
-  .scenario-name {
-    font-family: var(--font-heading);
-    font-size: var(--text-sm);
-    color: var(--gh-text-secondary);
-  }
-
-  .scenario-stats {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4);
-  }
-
-  .stat {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-  }
-
-  .stat-icon {
-    font-size: var(--text-base);
-  }
-
-  .stat-value {
-    font-size: var(--text-sm);
-    color: var(--gh-text-secondary);
-  }
-
-  .stat-value strong {
-    color: var(--gh-gold-400);
-    font-weight: 600;
-  }
-
-  .stat-divider {
-    width: 1px;
-    height: 20px;
-    background: var(--gh-border-default);
-  }
-
-  .scenario-btn {
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
-    padding: var(--space-2) var(--space-4);
-    background: var(--gh-bg-light);
-    border: 1px solid var(--gh-border-default);
-    border-radius: var(--radius-md);
-    color: var(--gh-text-secondary);
-    font-family: var(--font-heading);
-    font-size: var(--text-sm);
-    cursor: pointer;
-    transition: all var(--transition-base);
-  }
-
-  .scenario-btn:hover {
-    background: var(--gh-gold-700);
-    border-color: var(--gh-gold-600);
-    color: var(--gh-gold-100);
-  }
-
-  .scenario-btn svg {
-    width: 16px;
-    height: 16px;
-  }
-
-  @media (max-width: 640px) {
-    .scenario-stats {
-      display: none;
-    }
-  }
-
-  /* ==========================================
      MAIN CONTENT
      ========================================== */
   .main {
     flex: 1;
-    padding-block: var(--space-6);
+    padding-block: var(--space-4);
   }
 
   @media (min-width: 768px) {
     .main {
-      padding-block: var(--space-8);
+      padding-block: var(--space-5);
     }
   }
 
@@ -787,70 +782,30 @@ import EnemyManager from '../components/EnemyManager.astro';
      FOOTER
      ========================================== */
   .footer {
-    background: linear-gradient(180deg, var(--gh-bg-dark) 0%, var(--gh-bg-darker) 100%);
     border-top: 1px solid var(--gh-border-subtle);
-    padding-block: var(--space-8);
+    padding-block: var(--space-3);
   }
 
   .footer-inner {
     display: flex;
-    flex-direction: column;
     align-items: center;
-    gap: var(--space-4);
-    text-align: center;
-  }
-
-  .footer-brand {
-    display: flex;
-    align-items: center;
-    gap: var(--space-3);
-  }
-
-  .footer-logo {
-    color: var(--gh-gold-500);
-    font-size: var(--text-xl);
-  }
-
-  .footer-text {
-    font-family: var(--font-heading);
-    font-size: var(--text-lg);
-    color: var(--gh-gold-400);
-    letter-spacing: 0.05em;
-  }
-
-  .footer-tagline {
-    font-size: var(--text-sm);
-    color: var(--gh-text-muted);
-    max-width: 400px;
-    margin: 0;
-  }
-
-  .footer-links {
-    display: flex;
-    flex-wrap: wrap;
     justify-content: center;
-    gap: var(--space-2);
-  }
-
-  .footer-link {
-    font-size: var(--text-sm);
-    color: var(--gh-text-secondary);
-    transition: color var(--transition-fast);
-  }
-
-  .footer-link:hover {
-    color: var(--gh-gold-400);
-  }
-
-  .footer-separator {
-    color: var(--gh-text-muted);
+    text-align: center;
   }
 
   .footer-copyright {
     font-size: var(--text-xs);
     color: var(--gh-text-muted);
     margin: 0;
-    opacity: 0.7;
+  }
+
+  .footer-link {
+    color: var(--gh-gold-500);
+    transition: color var(--transition-fast);
+  }
+
+  .footer-link:hover {
+    color: var(--gh-gold-300);
   }
 
   /* ==========================================
@@ -858,17 +813,17 @@ import EnemyManager from '../components/EnemyManager.astro';
      ========================================== */
   @media (max-width: 640px) {
     .brand-emblem {
-      width: 48px;
-      height: 48px;
+      width: 32px;
+      height: 32px;
     }
 
     .emblem-icon {
-      width: 26px;
-      height: 26px;
+      width: 18px;
+      height: 18px;
     }
 
     .brand-title {
-      font-size: var(--text-xl);
+      font-size: var(--text-lg);
     }
 
     .brand-divider,
@@ -881,25 +836,322 @@ import EnemyManager from '../components/EnemyManager.astro';
     }
 
     .border-ornament {
-      width: 6px;
-      height: 6px;
+      width: 4px;
+      height: 4px;
     }
   }
 
   @media (max-width: 400px) {
     .brand-title {
-      font-size: var(--text-lg);
+      font-size: var(--text-base);
     }
 
     .brand-emblem {
-      width: 40px;
-      height: 40px;
+      width: 28px;
+      height: 28px;
     }
 
     .emblem-icon {
-      width: 22px;
-      height: 22px;
+      width: 16px;
+      height: 16px;
     }
+  }
+
+  /* ==========================================
+     INFO MODALS (Help & Settings)
+     ========================================== */
+  .info-modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+    opacity: 0;
+    visibility: hidden;
+    transition: all var(--transition-base);
+  }
+
+  .info-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .info-modal {
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    background: linear-gradient(180deg, var(--gh-bg-medium) 0%, var(--gh-bg-dark) 100%);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl), 0 0 40px rgba(184, 134, 42, 0.1);
+    transform: scale(0.9) translateY(20px);
+    transition: transform var(--transition-slow);
+  }
+
+  .info-modal-overlay.active .info-modal {
+    transform: scale(1) translateY(0);
+  }
+
+  .info-modal-header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    padding: var(--space-4);
+    border-bottom: 1px solid var(--gh-border-subtle);
+    background: linear-gradient(180deg, rgba(184, 134, 42, 0.05) 0%, transparent 100%);
+  }
+
+  .info-modal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    color: var(--gh-text-dark);
+    flex-shrink: 0;
+  }
+
+  .info-modal-icon svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .help-icon {
+    background: linear-gradient(135deg, var(--gh-blue-500) 0%, var(--gh-blue-700) 100%);
+  }
+
+  .settings-icon {
+    background: linear-gradient(135deg, var(--gh-gold-600) 0%, var(--gh-gold-700) 100%);
+  }
+
+  .info-modal-title-group {
+    flex: 1;
+  }
+
+  .info-modal-title {
+    font-family: var(--font-heading);
+    font-size: var(--text-lg);
+    color: var(--gh-text-primary);
+    margin: 0 0 var(--space-1) 0;
+  }
+
+  .info-modal-subtitle {
+    font-size: var(--text-sm);
+    color: var(--gh-text-muted);
+    margin: 0;
+  }
+
+  .info-modal-close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    background: var(--gh-bg-light);
+    border: 1px solid var(--gh-border-default);
+    border-radius: var(--radius-md);
+    color: var(--gh-text-muted);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .info-modal-close:hover {
+    background: var(--gh-red-700);
+    border-color: var(--gh-red-600);
+    color: white;
+  }
+
+  .info-modal-close svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .info-modal-body {
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  /* Help Content */
+  .help-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .help-heading {
+    font-family: var(--font-heading);
+    font-size: var(--text-base);
+    color: var(--gh-gold-400);
+    margin: 0;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--gh-border-subtle);
+  }
+
+  .help-section p {
+    font-size: var(--text-sm);
+    color: var(--gh-text-secondary);
+    line-height: var(--leading-relaxed);
+    margin: 0;
+  }
+
+  .help-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .help-list li {
+    font-size: var(--text-sm);
+    color: var(--gh-text-secondary);
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    line-height: var(--leading-relaxed);
+  }
+
+  .help-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    padding: 2px var(--space-2);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    font-weight: 600;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .help-tag.normal {
+    background: rgba(144, 97, 228, 0.15);
+    color: var(--gh-purple-400);
+  }
+
+  .help-tag.elite {
+    background: rgba(184, 134, 42, 0.15);
+    color: var(--gh-gold-400);
+  }
+
+  .help-tag.boss {
+    background: rgba(220, 69, 69, 0.15);
+    color: var(--gh-red-400);
+  }
+
+  .help-tag.objective {
+    background: rgba(109, 184, 232, 0.15);
+    color: var(--gh-blue-400);
+  }
+
+  .help-emoji {
+    font-size: var(--text-base);
+    flex-shrink: 0;
+    width: 24px;
+    text-align: center;
+  }
+
+  .text-red {
+    color: var(--gh-red-400);
+  }
+
+  .text-green {
+    color: var(--gh-green-400);
+  }
+
+  /* Settings Content */
+  .setting-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-3);
+    background: var(--gh-bg-dark);
+    border: 1px solid var(--gh-border-subtle);
+    border-radius: var(--radius-md);
+    transition: border-color var(--transition-fast);
+  }
+
+  .setting-item:hover {
+    border-color: var(--gh-border-default);
+  }
+
+  .setting-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .setting-label {
+    font-family: var(--font-heading);
+    font-size: var(--text-sm);
+    font-weight: 600;
+    color: var(--gh-text-primary);
+  }
+
+  .setting-desc {
+    font-size: var(--text-xs);
+    color: var(--gh-text-muted);
+    line-height: var(--leading-relaxed);
+  }
+
+  /* Toggle switch */
+  .toggle {
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 22px;
+    flex-shrink: 0;
+    cursor: pointer;
+  }
+
+  .toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .toggle-slider {
+    position: absolute;
+    inset: 0;
+    background: var(--gh-bg-lighter);
+    border: 2px solid var(--gh-border-default);
+    border-radius: 22px;
+    transition: all var(--transition-base);
+  }
+
+  .toggle-slider::before {
+    content: '';
+    position: absolute;
+    height: 14px;
+    width: 14px;
+    left: 2px;
+    bottom: 2px;
+    background: var(--gh-text-muted);
+    border-radius: 50%;
+    transition: all var(--transition-base);
+  }
+
+  .toggle input:checked + .toggle-slider {
+    background: rgba(184, 134, 42, 0.2);
+    border-color: var(--gh-gold-500);
+  }
+
+  .toggle input:checked + .toggle-slider::before {
+    transform: translateX(18px);
+    background: var(--gh-gold-400);
+  }
+
+  .toggle input:focus-visible + .toggle-slider {
+    box-shadow: 0 0 0 3px rgba(184, 134, 42, 0.3);
   }
 
   /* Landscape small devices */
@@ -922,7 +1174,7 @@ import EnemyManager from '../components/EnemyManager.astro';
     }
 
     .footer {
-      padding-block: var(--space-4);
+      padding-block: var(--space-2);
     }
   }
 </style>
